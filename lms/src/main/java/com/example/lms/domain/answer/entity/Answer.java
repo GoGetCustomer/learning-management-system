@@ -16,6 +16,7 @@ public class Answer extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long answerId;
 
+    // TODO : Student 엔티티와 연관 관계로 변경 에정
     @Column(nullable = false)
     private Long studentId;
 
