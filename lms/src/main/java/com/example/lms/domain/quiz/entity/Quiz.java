@@ -20,6 +20,7 @@ public class Quiz extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long quizId;
 
+    // TODO : Course 엔티티와 연관 관계로 변경 예정
     @Column(nullable = false)
     private Long courseId;
 
