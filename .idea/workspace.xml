@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="c5a1aa13-4694-488a-8270-5db08498eaff" name="Changes" comment="test: 퀴즈 생성 로직 구현 테스트">
+      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/gradle.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/learning-management-system.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lms/src/main/java/com/example/lms/domain/quiz/dto/QuizResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/lms/src/main/java/com/example/lms/domain/quiz/dto/QuizResponse.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lms/src/test/java/com/example/lms/domain/quiz/QuizServiceTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lms/src/test/java/com/example/lms/domain/quiz/service/QuizServiceTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/lms/src/test/java/com/example/lms/domain/quiz/service/QuizServiceTest.java" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ExternalProjectsData">
+    <projectState path="$PROJECT_DIR$/lms">
+      <ProjectState />
+    </projectState>
+  </component>
+  <component name="ExternalProjectsManager">
+    <system id="GRADLE">
+      <state>
+        <task path="$PROJECT_DIR$/lms">
+          <activation />
+        </task>
+        <projects_view>
+          <tree_state>
+            <expand />
+            <select />
+          </tree_state>
+        </projects_view>
+      </state>
+    </system>
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;sha2170&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/GoGetCustomer/learning-management-system.git&quot;,
+    &quot;accountId&quot;: &quot;85e4467e-3aa8-49e5-b7b5-792297fa8bcc&quot;
+  }
+}</component>
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: 3
+}</component>
+  <component name="ProjectId" id="2reQSDwZv8cHD0VOilwr3uSGO2g" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="1" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="autoscrollToSource" value="true" />
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Gradle.QuizServiceTest.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.QuizServiceTest.testCreateQuiz.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;feature/quiz-domain&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/tjdgusdk/learning-management-system&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  }
+}</component>
+  <component name="RunManager" selected="Gradle.QuizServiceTest">
+    <configuration name="QuizServiceTest" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$/lms" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" value="" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value=":test" />
+            <option value="--tests" />
+            <option value="&quot;com.example.lms.domain.quiz.QuizServiceTest&quot;" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>false</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <RunAsTest>true</RunAsTest>
+      <method v="2" />
+    </configuration>
+    <configuration name="QuizServiceTest.testCreateQuiz" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$/lms" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" value="" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value=":test" />
+            <option value="--tests" />
+            <option value="&quot;com.example.lms.domain.quiz.service.QuizServiceTest.testCreateQuiz&quot;" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>false</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <RunAsTest>true</RunAsTest>
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Gradle.QuizServiceTest" />
+        <item itemvalue="Gradle.QuizServiceTest.testCreateQuiz" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-9823dce3aa75-fdfe4dae3a2d-intellij.indexing.shared.core-IU-243.21565.193" />
+        <option value="bundled-js-predefined-d6986cc7102b-e768b9ed790e-JavaScript-IU-243.21565.193" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="c5a1aa13-4694-488a-8270-5db08498eaff" name="Changes" comment="" />
+      <created>1736917059444</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1736917059444</updated>
+      <workItem from="1736917060857" duration="5540000" />
+    </task>
+    <task id="LOCAL-00001" summary="0105 commit">
+      <option name="closed" value="true" />
+      <created>1736917497689</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1736917497689</updated>
+    </task>
+    <task id="LOCAL-00002" summary="fix: Quiz 엔티티 정적 팩토리 메서드 수정">
+      <option name="closed" value="true" />
+      <created>1736919299843</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1736919299843</updated>
+    </task>
+    <task id="LOCAL-00003" summary="fix: Answer 엔티티 정적 팩토리 메서드 수정 및 Student 매핑">
+      <option name="closed" value="true" />
+      <created>1736919521179</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1736919521179</updated>
+    </task>
+    <task id="LOCAL-00004" summary="fix: Question 엔티티 정적 팩토리 메서드 수정">
+      <option name="closed" value="true" />
+      <created>1736919536265</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1736919536265</updated>
+    </task>
+    <task id="LOCAL-00005" summary="fix: Quiz 엔티티 정적 팩토리 메서드 수정">
+      <option name="closed" value="true" />
+      <created>1736919542203</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1736919542203</updated>
+    </task>
+    <task id="LOCAL-00006" summary="fix: QuizService 정적 메서드 관련 수정">
+      <option name="closed" value="true" />
+      <created>1736919558533</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1736919558533</updated>
+    </task>
+    <task id="LOCAL-00007" summary="test: 퀴즈 생성 로직 테스트">
+      <option name="closed" value="true" />
+      <created>1736919612381</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1736919612381</updated>
+    </task>
+    <task id="LOCAL-00008" summary="fix: application.yml 수정">
+      <option name="closed" value="true" />
+      <created>1736919630334</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1736919630334</updated>
+    </task>
+    <task id="LOCAL-00009" summary="fix: Answer 엔티티 정적 팩토리 메서드 수정 및 Student 연관관계 매핑">
+      <option name="closed" value="true" />
+      <created>1736921408962</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1736921408962</updated>
+    </task>
+    <task id="LOCAL-00010" summary="fix: Question 엔티티 정적 팩토리 메서드 수정">
+      <option name="closed" value="true" />
+      <created>1736921486747</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1736921486747</updated>
+    </task>
+    <task id="LOCAL-00011" summary="fix: Quiz 엔티티 정적 팩토리 메서드 수정">
+      <option name="closed" value="true" />
+      <created>1736921512201</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1736921512201</updated>
+    </task>
+    <task id="LOCAL-00012" summary="fix: Quiz 엔티티 수정 관련">
+      <option name="closed" value="true" />
+      <created>1736921562590</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1736921562590</updated>
+    </task>
+    <task id="LOCAL-00013" summary="test: 퀴즈 생성 로직 구현 테스트">
+      <option name="closed" value="true" />
+      <created>1736921595216</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1736921595216</updated>
+    </task>
+    <option name="localTasksCounter" value="14" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="0105 commit" />
+    <MESSAGE value="fix: Answer 엔티티 정적 팩토리 메서드 수정 및 Student 매핑" />
+    <MESSAGE value="fix: QuizService 정적 메서드 관련 수정" />
+    <MESSAGE value="test: 퀴즈 생성 로직 테스트" />
+    <MESSAGE value="fix: application.yml 수정" />
+    <MESSAGE value="fix: Answer 엔티티 정적 팩토리 메서드 수정 및 Student 연관관계 매핑" />
+    <MESSAGE value="fix: Question 엔티티 정적 팩토리 메서드 수정" />
+    <MESSAGE value="fix: Quiz 엔티티 정적 팩토리 메서드 수정" />
+    <MESSAGE value="fix: Quiz 엔티티 수정 관련" />
+    <MESSAGE value="test: 퀴즈 생성 로직 구현 테스트" />
+    <option name="LAST_COMMIT_MESSAGE" value="test: 퀴즈 생성 로직 구현 테스트" />
+  </component>
+</project>
