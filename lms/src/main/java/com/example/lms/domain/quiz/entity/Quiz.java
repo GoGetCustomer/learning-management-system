@@ -32,4 +32,10 @@ public class Quiz extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Question> questions = new ArrayList<>();
+
+    public Quiz(Long courseId, String quizTitle, LocalDateTime quizDueDate) {
+        this.courseId = courseId;
+        this.quizTitle = quizTitle;
+        this.quizDueDate = quizDueDate;
+    }
 }
