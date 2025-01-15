@@ -35,4 +35,11 @@ public class Question extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Answer> answers = new ArrayList<>();
+
+    public Question(Quiz quiz, String content, String correct, Integer point) {
+        this.quiz = quiz;
+        this.content = content;
+        this.correct = correct;
+        this.point = point;
+    }
 }
