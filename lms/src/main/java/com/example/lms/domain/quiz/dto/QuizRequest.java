@@ -14,7 +14,6 @@ import java.util.List;
 public class QuizRequest {
 
     private String quizTitle;
-    // TODO : Course 엔티티와 연관관계로 대체
     private Long courseId;
     private LocalDateTime quizDueDate;
     private List<QuestionRequest> questions;
