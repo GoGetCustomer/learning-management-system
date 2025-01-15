@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -12,8 +14,9 @@ import lombok.NoArgsConstructor;
 public class CourseResponseDto {
     private Long courseId;
     private String courseTitle;
+    private String courseDescription;
     private String instructorName;
-    private int courseStudents;
-    private String startDate;
-    private String endDate;
+    private Integer courseStudents;
+    private LocalDate startDate;
+    private LocalDate endDate;
 }

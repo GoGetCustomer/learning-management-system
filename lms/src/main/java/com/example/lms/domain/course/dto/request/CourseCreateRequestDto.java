@@ -30,5 +30,8 @@ public class CourseCreateRequestDto {
     private LocalDate endDate;
 
     @Min(value = 0, message = "수강 정원은 0명 이상이어야 합니다.")
-    private int courseCapacity;
+    private Integer courseCapacity;
+
+    @NotNull(message = "강사 ID는 필수 입력값입니다.")
+    private Long instructorId;
 }
