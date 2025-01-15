@@ -21,8 +21,7 @@ public class QuizService {
 
     @Transactional
     public QuizResponse createQuiz(QuizRequest quizRequest) {
-
-        Quiz quiz = new Quiz(
+        Quiz quiz = Quiz.createQuiz(
                 quizRequest.getCourseId(),
                 quizRequest.getQuizTitle(),
                 quizRequest.getQuizDueDate()
@@ -31,8 +30,14 @@ public class QuizService {
         Quiz savedQuiz = quizRepository.save(quiz);
 
         List<Question> questions = quizRequest.getQuestions().stream()
-                .map(qr -> new Question(savedQuiz, qr.getContent(), qr.getCorrect(), qr.getPoint()))
+                .map(qr -> Question.createQuestion(
+                        savedQuiz,
+                        qr.getContent(),
+                        qr.getCorrect(),
+                        qr.getPoint()
+                ))
                 .collect(Collectors.toList());
+
         questionRepository.saveAll(questions);
 
         return new QuizResponse(
@@ -40,7 +45,12 @@ public class QuizService {
                 savedQuiz.getQuizTitle(),
                 savedQuiz.getQuizDueDate(),
                 questions.stream()
-                        .map(q -> new QuizResponse.QuestionResponse(q.getQuestionId(), q.getContent(), q.getCorrect(), q.getPoint()))
+                        .map(q-> new QuizResponse.QuestionResponse(
+                                q.getQuestionId(),
+                                q.getContent(),
+                                q.getCorrect(),
+                                q.getPoint()
+                        ))
                         .collect(Collectors.toList())
         );
     }

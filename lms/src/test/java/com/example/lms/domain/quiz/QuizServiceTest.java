@@ -14,7 +14,7 @@ import java.util.Arrays;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
-class QuizServiceTest {
+public class QuizServiceTest {
 
     @Autowired
     private QuizService quizService;
@@ -22,7 +22,6 @@ class QuizServiceTest {
     @Test
     @Transactional
     void testCreateQuiz() {
-
         QuizRequest quizRequest = new QuizRequest();
         quizRequest.setQuizTitle("Sample Quiz");
         quizRequest.setCourseId(1L);
@@ -40,13 +39,13 @@ class QuizServiceTest {
 
         quizRequest.setQuestions(Arrays.asList(question1, question2));
 
-        QuizResponse response = quizService.createQuiz(quizRequest);
+        QuizResponse quizResponse = quizService.createQuiz(quizRequest);
 
-        assertEquals("Sample Quiz", response.getQuizTitle());
-        assertEquals(2, response.getQuestions().size());
-        assertEquals("What is 10 + 10?", response.getQuestions().get(0).getContent());
-        assertEquals("20", response.getQuestions().get(0).getCorrect());
-        assertEquals("What is 5 * 3?", response.getQuestions().get(1).getContent());
-        assertEquals("15", response.getQuestions().get(1).getCorrect());
+        assertEquals("Sample Quiz", quizResponse.getQuizTitle());
+        assertEquals(2, quizResponse.getQuestions().size());
+        assertEquals("What is 10 + 10?", quizResponse.getQuestions().get(0).getContent());
+        assertEquals("20", quizResponse.getQuestions().get(0).getCorrect());
+        assertEquals("What is 5 * 3?", quizResponse.getQuestions().get(1).getContent());
+        assertEquals("15", quizResponse.getQuestions().get(1).getCorrect());
     }
 }
