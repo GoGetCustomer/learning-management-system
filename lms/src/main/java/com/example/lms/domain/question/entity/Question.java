@@ -43,5 +43,6 @@ public class Question extends BaseTimeEntity {
         question.correct = correct;
         question.point = point;
         return question;
+
     }
 }
