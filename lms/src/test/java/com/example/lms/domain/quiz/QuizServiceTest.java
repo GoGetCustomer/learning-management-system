@@ -47,5 +47,6 @@ public class QuizServiceTest {
         assertEquals("20", quizResponse.getQuestions().get(0).getCorrect());
         assertEquals("What is 5 * 3?", quizResponse.getQuestions().get(1).getContent());
         assertEquals("15", quizResponse.getQuestions().get(1).getCorrect());
+
     }
 }
