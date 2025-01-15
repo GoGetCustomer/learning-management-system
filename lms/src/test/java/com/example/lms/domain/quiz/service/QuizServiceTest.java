@@ -48,5 +48,6 @@ public class QuizServiceTest {
         assertEquals("20", quizResponse.getQuestions().get(0).getCorrect());
         assertEquals("5 * 3은 무엇인가요?", quizResponse.getQuestions().get(1).getContent());
         assertEquals("15", quizResponse.getQuestions().get(1).getCorrect());
+
     }
 }
