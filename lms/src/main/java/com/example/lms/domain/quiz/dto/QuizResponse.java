@@ -25,5 +25,6 @@ public class QuizResponse {
         private final String content;
         private final String correct;
         private final Integer point;
+
     }
 }
