@@ -39,6 +39,7 @@ public class Quiz extends BaseTimeEntity {
         quiz.quizTitle = quizTitle;
         quiz.quizDueDate = quizDueDate;
         return quiz;
+
     }
 
 }
