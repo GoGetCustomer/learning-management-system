@@ -52,6 +52,7 @@ public class QuizService {
                                 q.getPoint()
                         ))
                         .collect(Collectors.toList())
+
         );
     }
 }
