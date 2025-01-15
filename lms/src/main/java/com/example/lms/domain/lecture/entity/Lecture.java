@@ -14,8 +14,6 @@ import java.time.LocalTime;
 @Table(name = "lecture")
 @Getter
 @NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class Lecture extends BaseTimeEntity {
 
     @Id
@@ -38,4 +36,23 @@ public class Lecture extends BaseTimeEntity {
 
     @Column(name = "lecture_time", nullable = false)
     private LocalTime lectureTime;
+
+    @Builder
+    public Lecture(Course course, String lectureTitle, String lectureDescription, String lectureUrl, LocalTime lectureTime) {
+        this.course = course;
+        this.lectureTitle = lectureTitle;
+        this.lectureDescription = lectureDescription;
+        this.lectureUrl = lectureUrl;
+        this.lectureTime = lectureTime;
+    }
+
+    public static Lecture of(Course course, String lectureTitle, String lectureDescription, String lectureUrl, LocalTime lectureTime) {
+        return Lecture.builder()
+                .course(course)
+                .lectureTitle(lectureTitle)
+                .lectureDescription(lectureDescription)
+                .lectureUrl(lectureUrl)
+                .lectureTime(lectureTime)
+                .build();
+    }
 }

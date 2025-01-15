@@ -12,9 +12,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "content")
 @NoArgsConstructor
-@AllArgsConstructor
 @Getter
-@Builder
 public class Content extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,4 +31,21 @@ public class Content extends BaseTimeEntity {
 
     @Column(name = "file_url", length = 300, nullable = false)
     private String fileUrl;
+
+    @Builder
+    public Content(Course course, String fileType, String fileName, String fileUrl) {
+        this.course = course;
+        this.fileType = fileType;
+        this.fileName = fileName;
+        this.fileUrl = fileUrl;
+    }
+
+    public static Content of(Course course, String fileType, String fileName, String fileUrl) {
+        return Content.builder()
+                .course(course)
+                .fileType(fileType)
+                .fileName(fileName)
+                .fileUrl(fileUrl)
+                .build();
+    }
 }
