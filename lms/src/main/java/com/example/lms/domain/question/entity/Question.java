@@ -42,6 +42,7 @@ public class Question extends BaseTimeEntity {
         question.content = content;
         question.correct = correct;
         question.point = point;
+        quiz.getQuestions().add(question);
         return question;
 
     }
