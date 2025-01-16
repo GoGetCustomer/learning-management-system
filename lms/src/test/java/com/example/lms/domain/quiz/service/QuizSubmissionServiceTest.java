@@ -9,6 +9,7 @@ import com.example.lms.domain.quiz.repository.QuizRepository;
 import com.example.lms.domain.student.entity.Student;
 import com.example.lms.domain.student.repository.StudentRepository;
 import jakarta.transaction.Transactional;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -36,6 +37,7 @@ public class QuizSubmissionServiceTest {
     private StudentRepository studentRepository;
 
     @Test
+    @DisplayName("퀴즈를 제출한다.")
     public void testSubmitQuiz() {
         Student student = Student.of(
                 "Student1",
