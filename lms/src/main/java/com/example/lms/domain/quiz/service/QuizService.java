@@ -95,4 +95,42 @@ public class QuizService {
                 ))
                 .collect(Collectors.toList());
     }
+
+    @Transactional
+    public QuizResponse updateQuiz(Long quizId, QuizRequest quizRequest) {
+        Quiz quiz = quizRepository.findById(quizId)
+                .orElseThrow(() -> new IllegalArgumentException("퀴즈를 찾을 수 없습니다."));
+
+        quiz.updateQuizInfo(quizRequest.getQuizTitle(), quizRequest.getQuizDueDate());
+
+        questionRepository.deleteAll(quiz.getQuestions());
+        quiz.getQuestions().clear();
+
+        List<Question> updatedQuestions = quizRequest.getQuestions().stream()
+                .map(qr -> Question.createQuestion(quiz, qr.getContent(), qr.getCorrect(), qr.getPoint()))
+                .collect(Collectors.toList());
+        questionRepository.saveAll(updatedQuestions);
+
+        return new QuizResponse(
+                quiz.getQuizId(),
+                quiz.getQuizTitle(),
+                quiz.getQuizDueDate(),
+                updatedQuestions.stream()
+                        .map(q -> new QuizResponse.QuestionResponse(
+                                q.getQuestionId(),
+                                q.getContent(),
+                                q.getCorrect(),
+                                q.getPoint()
+                        ))
+                        .collect(Collectors.toList())
+        );
+    }
+
+    @Transactional
+    public void deleteQuiz(Long quizId) {
+        Quiz quiz = quizRepository.findById(quizId)
+                .orElseThrow(() -> new IllegalArgumentException("퀴즈를 찾을 수 없습니다."));
+
+        quizRepository.delete(quiz);
+    }
 }

@@ -39,7 +39,10 @@ public class Quiz extends BaseTimeEntity {
         quiz.quizTitle = quizTitle;
         quiz.quizDueDate = quizDueDate;
         return quiz;
-
     }
 
+    public void updateQuizInfo(String quizTitle, LocalDateTime quizDueDate) {
+        this.quizTitle = quizTitle;
+        this.quizDueDate = quizDueDate;
+    }
 }

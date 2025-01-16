@@ -34,4 +34,18 @@ public class QuizController {
         List<QuizResponse> response = quizService.getQuizzesByCourseId(courseId);
         return ResponseEntity.ok(response);
     }
+
+    @PutMapping("/{quizId}")
+    public ResponseEntity<QuizResponse> updateQuiz(
+            @PathVariable Long quizId,
+            @RequestBody QuizRequest quizRequest) {
+        QuizResponse updatedQuiz = quizService.updateQuiz(quizId, quizRequest);
+        return ResponseEntity.ok(updatedQuiz);
+    }
+
+    @DeleteMapping("/{quizId}")
+    public ResponseEntity<Void> deleteQuiz(@PathVariable Long quizId) {
+        quizService.deleteQuiz(quizId);
+        return ResponseEntity.noContent().build();
+    }
 }
