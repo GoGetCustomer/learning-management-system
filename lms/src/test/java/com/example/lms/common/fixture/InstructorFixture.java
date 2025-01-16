@@ -1,7 +1,9 @@
 package com.example.lms.common.fixture;
 
 import com.example.lms.domain.instructor.entity.Instructor;
+import lombok.Getter;
 
+@Getter
 public enum InstructorFixture {
     INSTRUCTOR_FIXTURE_1(
             "testLoginId",
@@ -38,25 +40,5 @@ public enum InstructorFixture {
 
     public Instructor createInstructor() {
         return Instructor.of(loginId, password, email, name, description);
-    }
-
-    public String getLoginId() {
-        return loginId;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getDescription() {
-        return description;
     }
 }
