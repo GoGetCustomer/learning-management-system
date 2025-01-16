@@ -1,5 +1,6 @@
 package com.example.lms.domain.instructor.entity;
 
+import com.example.lms.domain.teaching.entity.Teaching;
 import com.example.lms.domain.user.enums.Role;
 import com.example.lms.domain.user.entity.User;
 import jakarta.persistence.*;
@@ -7,6 +8,11 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static jakarta.persistence.CascadeType.ALL;
 
 @Entity
 @Table(name = "instructor")
@@ -21,6 +27,9 @@ public class Instructor extends User {
 
     @Column(name = "instructor_descroption", nullable = false)
     private String description;
+
+    @OneToMany(mappedBy = "instructor", cascade = ALL)
+    private List<Teaching> teachings = new ArrayList<>();
 
     @Builder
     private Instructor(String loginId, String password, String email, String name, String description) {
