@@ -6,10 +6,7 @@ import com.example.lms.domain.quiz.entity.Quiz;
 import com.example.lms.domain.quiz.service.QuizService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/quizzes")
@@ -21,6 +18,12 @@ public class QuizController {
     @PostMapping
     public ResponseEntity<QuizResponse> createQuiz(@RequestBody QuizRequest quizRequest) {
         QuizResponse response = quizService.createQuiz(quizRequest);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/{quizId}")
+    public ResponseEntity<QuizResponse> getQuiz(@PathVariable Long quizId) {
+        QuizResponse response = quizService.getQuiz(quizId);
         return ResponseEntity.ok(response);
     }
 }

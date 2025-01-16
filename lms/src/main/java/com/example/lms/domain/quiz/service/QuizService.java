@@ -52,7 +52,26 @@ public class QuizService {
                                 q.getPoint()
                         ))
                         .collect(Collectors.toList())
+        );
+    }
 
+    @Transactional(readOnly = true)
+    public QuizResponse getQuiz(Long quizId) {
+        Quiz quiz = quizRepository.findById(quizId)
+                .orElseThrow(() -> new IllegalArgumentException("퀴즈를 찾을 수 없습니다."));
+
+        return new QuizResponse(
+                quiz.getQuizId(),
+                quiz.getQuizTitle(),
+                quiz.getQuizDueDate(),
+                quiz.getQuestions().stream()
+                        .map(q -> new QuizResponse.QuestionResponse(
+                                q.getQuestionId(),
+                                q.getContent(),
+                                q.getCorrect(),
+                                q.getPoint()
+                        ))
+                        .collect(Collectors.toList())
         );
     }
 }
