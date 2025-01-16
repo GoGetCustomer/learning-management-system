@@ -12,8 +12,7 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 public class QuizServiceTest {
@@ -57,6 +56,7 @@ public class QuizServiceTest {
         assertEquals(createdQuiz.getQuestions().size(), getQuiz.getQuestions().size());
     }
 
+
     @Test
     @Transactional
     @DisplayName("특정 과정에 속한 퀴즈 목록을 조회한다.")
@@ -98,5 +98,66 @@ public class QuizServiceTest {
         assertEquals(2, quizzes.size());
         assertEquals("과정 1 퀴즈 1", quizzes.get(0).getQuizTitle());
         assertEquals("과정 1 퀴즈 2", quizzes.get(1).getQuizTitle());
+    }
+
+
+    @Test
+    @Transactional
+    @DisplayName("퀴즈를 수정한다.")
+    void testUpdateQuiz() {
+        QuizRequest quizRequest = new QuizRequest();
+        quizRequest.setQuizTitle("기존 퀴즈 제목");
+        quizRequest.setCourseId(1L);
+        quizRequest.setQuizDueDate(LocalDateTime.now().plusDays(7));
+
+        QuizRequest.QuestionRequest question1 = new QuizRequest.QuestionRequest();
+        question1.setContent("10 + 10은?");
+        question1.setCorrect("20");
+        question1.setPoint(10);
+
+        quizRequest.setQuestions(List.of(question1));
+        QuizResponse createdQuiz = quizService.createQuiz(quizRequest);
+
+        QuizRequest updatedQuizRequest = new QuizRequest();
+        updatedQuizRequest.setQuizTitle("수정된 퀴즈 제목");
+        updatedQuizRequest.setQuizDueDate(LocalDateTime.now().plusDays(5));
+
+        QuizRequest.QuestionRequest updatedQuestion = new QuizRequest.QuestionRequest();
+        updatedQuestion.setContent("10 * 10은?");
+        updatedQuestion.setCorrect("100");
+        updatedQuestion.setPoint(15);
+
+        updatedQuizRequest.setQuestions(List.of(updatedQuestion));
+
+        QuizResponse updatedQuiz = quizService.updateQuiz(createdQuiz.getQuizId(), updatedQuizRequest);
+
+        assertEquals("수정된 퀴즈 제목", updatedQuiz.getQuizTitle());
+        assertEquals(1, updatedQuiz.getQuestions().size());
+        assertEquals("10 * 10은?", updatedQuiz.getQuestions().get(0).getContent());
+    }
+
+    @Test
+    @Transactional
+    @DisplayName("퀴즈를 삭제한다.")
+    void testDeleteQuiz() {
+        QuizRequest quizRequest = new QuizRequest();
+        quizRequest.setQuizTitle("삭제할 퀴즈");
+        quizRequest.setCourseId(1L);
+        quizRequest.setQuizDueDate(LocalDateTime.now().plusDays(7));
+
+        QuizRequest.QuestionRequest question1 = new QuizRequest.QuestionRequest();
+        question1.setContent("1 + 1은?");
+        question1.setCorrect("2");
+        question1.setPoint(10);
+
+        quizRequest.setQuestions(List.of(question1));
+        QuizResponse createdQuiz = quizService.createQuiz(quizRequest);
+
+        quizService.deleteQuiz(createdQuiz.getQuizId());
+
+        Exception exception = assertThrows(IllegalArgumentException.class, () ->
+                quizService.getQuiz(createdQuiz.getQuizId())
+        );
+        assertEquals("퀴즈를 찾을 수 없습니다.", exception.getMessage());
     }
 }
