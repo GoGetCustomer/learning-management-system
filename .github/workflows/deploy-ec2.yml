@@ -7,7 +7,7 @@ on:
       - main
 
 jobs:
-  build-docker-image:
+  build-image:
     runs-on: ubuntu-latest
 
     steps:
@@ -60,6 +60,9 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           port: ${{ secrets.SERVER_PORT }}
           script: |
-            docker-compose -f ${{ secrets.DOCKER_COMPOSE_YAML_PATH }} down
-            docker-compose -f ${{ secrets.DOCKER_COMPOSE_YAML_PATH }} pull
-            docker-compose -f ${{ secrets.DOCKER_COMPOSE_YAML_PATH }} up -d
+            rm -rf learning-management-system
+            git clone git@github.com:GoGetCustomer/learning-management-system.git
+            cd learning-management-system/lms
+            ./gradlew clean build -x test
+            cd build/libs/
+            nohup java -jar -Dspring.profiles.active=prod lms-0.0.1-SNAPSHOT.jar &
