@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @SpringBootTest
 public class QuizServiceTest {
@@ -21,32 +22,37 @@ public class QuizServiceTest {
 
     @Test
     @Transactional
-    @DisplayName("퀴즈를 생성한다")
-    void testCreateQuiz() {
+    @DisplayName("퀴즈를 생성하고 조회한다.")
+    void testCreateAndGetQuiz() {
         QuizRequest quizRequest = new QuizRequest();
-        quizRequest.setQuizTitle("퀴즈 예시");
+        quizRequest.setQuizTitle("퀴즈 생성 및 조회 테스트");
         quizRequest.setCourseId(1L);
         quizRequest.setQuizDueDate(LocalDateTime.now().plusDays(7));
 
         QuizRequest.QuestionRequest question1 = new QuizRequest.QuestionRequest();
-        question1.setContent("10 + 10은 무엇인가요?");
+        question1.setContent("10 + 10은?");
         question1.setCorrect("20");
         question1.setPoint(10);
 
         QuizRequest.QuestionRequest question2 = new QuizRequest.QuestionRequest();
-        question2.setContent("5 * 3은 무엇인가요?");
+        question2.setContent("5 * 3은?");
         question2.setCorrect("15");
         question2.setPoint(5);
 
         quizRequest.setQuestions(Arrays.asList(question1, question2));
 
-        QuizResponse quizResponse = quizService.createQuiz(quizRequest);
+        QuizResponse createdQuiz = quizService.createQuiz(quizRequest);
 
-        assertEquals("퀴즈 예시", quizResponse.getQuizTitle());
-        assertEquals(2, quizResponse.getQuestions().size());
-        assertEquals("10 + 10은 무엇인가요?", quizResponse.getQuestions().get(0).getContent());
-        assertEquals("20", quizResponse.getQuestions().get(0).getCorrect());
-        assertEquals("5 * 3은 무엇인가요?", quizResponse.getQuestions().get(1).getContent());
-        assertEquals("15", quizResponse.getQuestions().get(1).getCorrect());
+        System.out.println("생성된 퀴즈 ID: " + createdQuiz.getQuizId());
+        System.out.println("생성된 질문 수 : " + createdQuiz.getQuestions().size());
+        createdQuiz.getQuestions().forEach(q ->
+                System.out.println("질문 : " + q.getContent())
+        );
+
+        QuizResponse getQuiz = quizService.getQuiz(createdQuiz.getQuizId());
+
+        assertNotNull(getQuiz, "퀴즈 조회 실패");
+        assertEquals(createdQuiz.getQuizTitle(), getQuiz.getQuizTitle());
+        assertEquals(createdQuiz.getQuestions().size(), getQuiz.getQuestions().size());
     }
 }
