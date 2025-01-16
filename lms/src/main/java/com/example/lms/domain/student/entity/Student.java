@@ -1,6 +1,7 @@
 package com.example.lms.domain.student.entity;
 
 import com.example.lms.domain.answer.entity.Answer;
+import com.example.lms.domain.quizGrade.entity.QuizGrade;
 import com.example.lms.domain.registration.entity.Registration;
 import com.example.lms.domain.user.enums.Role;
 import com.example.lms.domain.user.entity.User;
@@ -32,8 +33,8 @@ public class Student extends User {
     @OneToMany(mappedBy = "student", cascade = ALL)
     private List<Answer> answers = new ArrayList<>();
 
-//    @OneToMany(mappedBy = "student", cascade = ALL) //TODO: 퀴즈 성적 생성 후 진행
-//    private List<QuizGrade> quizGrades = new ArrayList<>();
+    @OneToMany(mappedBy = "student", cascade = ALL)
+    private List<QuizGrade> quizGrades = new ArrayList<>();
 
 //    @OneToMany(mappedBy = "student", cascade = ALL) //TODO: 과제 성적 생성 후 진행
 //    private List<AssigmentGrade> assigmentGrades = new ArrayList<>();
