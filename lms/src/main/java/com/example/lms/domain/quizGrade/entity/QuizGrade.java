@@ -6,8 +6,10 @@ import com.example.lms.domain.student.entity.Student;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
+@Setter
 @NoArgsConstructor
 @Entity
 @Table
@@ -27,9 +29,9 @@ public class QuizGrade {
     private Quiz quiz;
 
     @Column(nullable = false)
-    private Byte grade;
+    private int grade;
 
-    public static QuizGrade create(Student student, Quiz  quiz, Byte grade) {
+    public static QuizGrade create(Student student, Quiz  quiz, int grade) {
         QuizGrade quizGrade = new QuizGrade();
         quizGrade.student = student;
         quizGrade.quiz = quiz;
