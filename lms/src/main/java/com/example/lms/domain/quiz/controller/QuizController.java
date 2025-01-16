@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/quizzes")
 @RequiredArgsConstructor
@@ -24,6 +26,12 @@ public class QuizController {
     @GetMapping("/{quizId}")
     public ResponseEntity<QuizResponse> getQuiz(@PathVariable Long quizId) {
         QuizResponse response = quizService.getQuiz(quizId);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/course/{courseId}")
+    public ResponseEntity<List<QuizResponse>> getQuizzesByCourseId(@PathVariable Long courseId) {
+        List<QuizResponse> response = quizService.getQuizzesByCourseId(courseId);
         return ResponseEntity.ok(response);
     }
 }

@@ -74,4 +74,25 @@ public class QuizService {
                         .collect(Collectors.toList())
         );
     }
+
+    @Transactional(readOnly = true)
+    public List<QuizResponse> getQuizzesByCourseId(Long courseId) {
+        List<Quiz> quizzes = quizRepository.findByCourseId(courseId);
+
+        return quizzes.stream()
+                .map(quiz -> new QuizResponse(
+                        quiz.getQuizId(),
+                        quiz.getQuizTitle(),
+                        quiz.getQuizDueDate(),
+                        quiz.getQuestions().stream()
+                                .map(q -> new QuizResponse.QuestionResponse(
+                                        q.getQuestionId(),
+                                        q.getContent(),
+                                        q.getCorrect(),
+                                        q.getPoint()
+                                ))
+                                .collect(Collectors.toList())
+                ))
+                .collect(Collectors.toList());
+    }
 }
