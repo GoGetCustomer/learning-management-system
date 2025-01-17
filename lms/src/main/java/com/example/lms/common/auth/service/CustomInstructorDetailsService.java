@@ -20,4 +20,10 @@ public class CustomInstructorDetailsService implements UserDetailsService {
                 .map(instructor -> new CustomUserDetails(instructor, instructor.getId()))
                 .orElseThrow(() -> new UsernameNotFoundException("강사 정보를 찾을 수 없습니다. : " + loginId));
     }
+
+    public UserDetails loadUserByInstructorId(String instructorId) throws UsernameNotFoundException {
+        return instructorRepository.findById(Long.valueOf(instructorId))
+                .map(instructor -> new CustomUserDetails(instructor, instructor.getId()))
+                .orElseThrow(() -> new UsernameNotFoundException("강사 정보를 찾을 수 없습니다. : " + instructorId));
+    }
 }

@@ -70,4 +70,42 @@ class CustomStudentDetailsServiceTest {
         verify(studentRepository, times(1)).findByLoginId(loginId);
     }
 
+    @Test
+    @DisplayName("학생 식별자로 UserDetails 객체를 반환한다.")
+    void loadUserByUsernameWithStudentId() {
+        // given
+        Student student = StudentFixture.STUDENT_FIXTURE_1.createStudent();
+        ReflectionFieldSetter.setId(student, 1L);
+        Long studentId = student.getId();
+        when(studentRepository.findById(studentId)).thenReturn(Optional.of(student));
+
+        // when
+        UserDetails userDetails = customStudentDetailsService.loadUserByStudentId(studentId.toString());
+
+        // then
+        assertAll(
+                () -> assertThat(userDetails).isNotNull(),
+                () -> assertThat(userDetails.getUsername()).isEqualTo(student.getId().toString()),
+                () -> assertThat(userDetails.getAuthorities())
+                        .hasSize(1)
+                        .extracting("authority")
+                        .containsExactly(STUDENT.getAuthority())
+        );
+        verify(studentRepository, times(1)).findById(studentId);
+    }
+
+    @DisplayName("아이디를 찾을 수 없는 학생은 오류를 반환한다.")
+    @Test
+    void loadUserByStudentIdUserNotFound() {
+        // given
+        String studentId = "1";
+        when(studentRepository.findById(Long.valueOf(studentId))).thenReturn(Optional.empty());
+
+        // when & then
+        assertThatThrownBy(() -> customStudentDetailsService.loadUserByStudentId(studentId))
+                .isInstanceOf(UsernameNotFoundException.class)
+                .hasMessageContaining("학생 정보를 찾을 수 없습니다. : " + studentId);
+        verify(studentRepository, times(1)).findById(Long.valueOf(studentId));
+    }
+
 }

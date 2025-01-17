@@ -20,5 +20,11 @@ public class CustomStudentDetailsService implements UserDetailsService {
                 .map(student -> new CustomUserDetails(student, student.getId()))
                 .orElseThrow(() -> new UsernameNotFoundException("학생 정보를 찾을 수 없습니다. : " + loginId));
     }
+
+    public UserDetails loadUserByStudentId(String studentId) throws UsernameNotFoundException {
+        return studentRepository.findById(Long.valueOf(studentId))
+                .map(student -> new CustomUserDetails(student, student.getId()))
+                .orElseThrow(() -> new UsernameNotFoundException("학생 정보를 찾을 수 없습니다. : " + studentId));
+    }
 }
 
