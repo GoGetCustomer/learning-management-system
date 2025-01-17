@@ -1,7 +1,7 @@
 name: Deploy with Docker
 
 on:
-  pull_request:
+  push:
     branches:
       - develop
 
