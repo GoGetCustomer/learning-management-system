@@ -4,6 +4,7 @@ import com.example.lms.domain.quiz.dto.QuizSubmissionRequest;
 import com.example.lms.domain.quiz.dto.QuizSubmissionResponse;
 import com.example.lms.domain.quiz.service.QuizSubmissionService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,6 +21,6 @@ public class QuizSubmissionController {
             @RequestBody QuizSubmissionRequest request
     ) {
         QuizSubmissionResponse response = quizSubmissionService.submitQuiz(quizId, request);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 }
