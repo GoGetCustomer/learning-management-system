@@ -1,6 +1,6 @@
 package com.example.lms.domain.assignment.service;
 
-import com.example.lms.domain.assignment.dto.AssignmentDto;
+import com.example.lms.domain.assignment.dto.AssignmentRequest;
 import com.example.lms.domain.assignment.entity.Assignment;
 import com.example.lms.domain.assignment.repository.AssignmentRepository;
 import com.example.lms.domain.course.entity.Course;
@@ -15,15 +15,16 @@ public class AssignmentService {
     private final AssignmentRepository assignmentRepository;
     private final CourseRepository courseRepository;
 
-    public Assignment createAssignment(Long courseId, AssignmentDto assignmentDto) {
+    public Assignment createAssignment(Long courseId, AssignmentRequest assignmentRequest) {
         Course course = courseRepository.findById(courseId)
                 .orElseThrow(() -> new IllegalArgumentException("Course not found"));
 
-        Assignment assignment = new Assignment();
-        assignment.setCourse(course);
-        assignment.setTitle(assignmentDto.getTitle());
-        assignment.setDescription(assignmentDto.getDescription());
-        assignment.setDueDate(assignmentDto.getDueDate());
+        Assignment assignment = Assignment.of(
+                course,
+                assignmentRequest.getTitle(),
+                assignmentRequest.getDescription(),
+                assignmentRequest.getDueDate()
+        );
 
         return assignmentRepository.save(assignment);
     }

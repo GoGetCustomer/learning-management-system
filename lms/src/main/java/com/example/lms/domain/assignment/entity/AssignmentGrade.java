@@ -1,5 +1,6 @@
 package com.example.lms.domain.assignment.entity;
 
+import com.example.lms.domain.assignment.entity.Assignment;
 import com.example.lms.domain.student.entity.Student;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -12,7 +13,7 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Submission {
+public class AssignmentGrade {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,24 +27,32 @@ public class Submission {
     @JoinColumn(name = "student_id", nullable = false)
     private Student student;
 
-    private String fileUrl;
+    private int grade;
 
-    private LocalDateTime submittedAt;
+    private String feedback;
+
+    private LocalDateTime createdAt;
+
+    private LocalDateTime updatedAt;
 
     @Builder
-    private Submission(Assignment assignment, Student student, String fileUrl, LocalDateTime submittedAt) {
+    private AssignmentGrade(Assignment assignment, Student student, int grade, String feedback, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.assignment = assignment;
         this.student = student;
-        this.fileUrl = fileUrl;
-        this.submittedAt = submittedAt;
+        this.grade = grade;
+        this.feedback = feedback;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
 
-    public static Submission of(Assignment assignment, Student student, String fileUrl, LocalDateTime submittedAt) {
-        return Submission.builder()
+    public static AssignmentGrade of(Assignment assignment, Student student, int grade, String feedback) {
+        return AssignmentGrade.builder()
                 .assignment(assignment)
                 .student(student)
-                .fileUrl(fileUrl)
-                .submittedAt(submittedAt)
+                .grade(grade)
+                .feedback(feedback)
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
                 .build();
     }
 }

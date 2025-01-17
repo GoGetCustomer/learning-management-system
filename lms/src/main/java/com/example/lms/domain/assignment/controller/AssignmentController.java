@@ -1,6 +1,7 @@
 package com.example.lms.domain.assignment.controller;
 
-import com.example.lms.domain.assignment.dto.AssignmentDto;
+import com.example.lms.domain.assignment.dto.AssignmentRequest;
+import com.example.lms.domain.assignment.dto.AssignmentResponse;
 import com.example.lms.domain.assignment.entity.Assignment;
 import com.example.lms.domain.assignment.service.AssignmentService;
 import lombok.RequiredArgsConstructor;
@@ -15,10 +16,15 @@ public class AssignmentController {
     private final AssignmentService assignmentService;
 
     @PostMapping
-    public ResponseEntity<Assignment> createAssignment(
+    public ResponseEntity<AssignmentResponse> createAssignment(
             @PathVariable Long courseId,
-            @RequestBody AssignmentDto assignmentDto) {
-        Assignment assignment = assignmentService.createAssignment(courseId, assignmentDto);
-        return ResponseEntity.ok(assignment);
+            @RequestBody AssignmentRequest assignmentRequest) {
+        Assignment assignment = assignmentService.createAssignment(courseId, assignmentRequest);
+        AssignmentResponse response = new AssignmentResponse();
+        response.setId(assignment.getId());
+        response.setTitle(assignment.getTitle());
+        response.setDescription(assignment.getDescription());
+        response.setDueDate(assignment.getDueDate());
+        return ResponseEntity.ok(response);
     }
 }

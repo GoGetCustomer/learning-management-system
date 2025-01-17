@@ -2,16 +2,16 @@ package com.example.lms.domain.assignment.entity;
 
 import com.example.lms.domain.course.entity.Course;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.time.LocalDate;
 
 @Entity
 @Getter
-@Setter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Assignment {
 
     @Id
@@ -27,4 +27,21 @@ public class Assignment {
     private String description;
 
     private LocalDate dueDate;
+
+    @Builder
+    private Assignment(Course course, String title, String description, LocalDate dueDate) {
+        this.course = course;
+        this.title = title;
+        this.description = description;
+        this.dueDate = dueDate;
+    }
+
+    public static Assignment of(Course course, String title, String description, LocalDate dueDate) {
+        return Assignment.builder()
+                .course(course)
+                .title(title)
+                .description(description)
+                .dueDate(dueDate)
+                .build();
+    }
 }

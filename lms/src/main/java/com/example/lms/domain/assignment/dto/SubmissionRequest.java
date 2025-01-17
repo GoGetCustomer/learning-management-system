@@ -7,7 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class SubmissionDto {
+public class SubmissionRequest {
     private Long studentId;
     private String fileUrl;
 }
