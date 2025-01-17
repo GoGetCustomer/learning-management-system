@@ -1,10 +1,9 @@
 name: Deploy with Docker
 
 on:
-  pull_request:
+  push:
     branches:
       - develop
-      - main
 
 jobs:
   build-docker-image:
