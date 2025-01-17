@@ -1,6 +1,8 @@
 package com.example.lms.common.config;
 
+import com.example.lms.common.auth.filter.CustomUsernamePasswordAuthenticationFilter;
 import com.example.lms.common.auth.filter.InstructorLoginFilter;
+import com.example.lms.common.auth.filter.JwtAuthenticationFilter;
 import com.example.lms.common.auth.filter.StudentLoginFilter;
 import com.example.lms.common.auth.jwt.TokenProvider;
 import com.example.lms.common.auth.service.CustomInstructorDetailsService;
@@ -51,6 +53,8 @@ public class SecurityConfig {
 						.requestMatchers("/api/instructors/**").hasAuthority(Role.INSTRUCTOR.getAuthority())
 						.anyRequest().authenticated()
 				)
+				.addFilterBefore(new JwtAuthenticationFilter(tokenProvider),
+						CustomUsernamePasswordAuthenticationFilter.class)
 				.addFilterAt(new StudentLoginFilter(studentAuthenticationManager, tokenProvider, objectMapper),
 						UsernamePasswordAuthenticationFilter.class)
 				.addFilterAt(new InstructorLoginFilter(instructorAuthenticationManager, tokenProvider, objectMapper),

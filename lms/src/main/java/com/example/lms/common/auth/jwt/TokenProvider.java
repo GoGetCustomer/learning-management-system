@@ -93,11 +93,11 @@ public class TokenProvider {
         String subject = claims.getSubject();
 
         if (role != null && role.equals(Role.STUDENT.getAuthority())) {
-            UserDetails userDetails = customStudentDetailsService.loadUserByUsername(subject);
+            UserDetails userDetails = customStudentDetailsService.loadUserByStudentId(subject);
             return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
         }
         if (role != null && role.equals(Role.INSTRUCTOR.getAuthority())) {
-            UserDetails userDetails = customInstructorDetailsService.loadUserByUsername(subject);
+            UserDetails userDetails = customInstructorDetailsService.loadUserByInstructorId(subject);
             return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
         }
         return null;

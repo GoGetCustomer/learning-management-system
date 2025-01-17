@@ -101,7 +101,7 @@ class TokenProviderTest {
         //given
         String accessToken = tokenProvider.createAccessToken(TEST_SUBJECT, TEST_ROLE_STUDENT, new Date());
         UserDetails userDetails = new User(TEST_SUBJECT, "", Collections.singletonList(new SimpleGrantedAuthority(TEST_ROLE_STUDENT)));
-        when(customStudentDetailsService.loadUserByUsername(TEST_SUBJECT)).thenReturn(userDetails);
+        when(customStudentDetailsService.loadUserByStudentId(TEST_SUBJECT)).thenReturn(userDetails);
 
         //when
         Authentication authentication = tokenProvider.getAuthenticationByAccessToken(accessToken);
@@ -123,7 +123,7 @@ class TokenProviderTest {
         //given
         String accessToken = tokenProvider.createAccessToken(TEST_SUBJECT, TEST_ROLE_INSTRUCTOR, new Date());
         UserDetails userDetails = new User(TEST_SUBJECT, "", Collections.singletonList(new SimpleGrantedAuthority(TEST_ROLE_INSTRUCTOR)));
-        when(customInstructorDetailsService.loadUserByUsername(TEST_SUBJECT)).thenReturn(userDetails);
+        when(customInstructorDetailsService.loadUserByInstructorId(TEST_SUBJECT)).thenReturn(userDetails);
 
         //when
         Authentication authentication = tokenProvider.getAuthenticationByAccessToken(accessToken);
