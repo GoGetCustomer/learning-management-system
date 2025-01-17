@@ -1,6 +1,7 @@
 package com.example.lms.common.auth.service;
 
 import com.example.lms.common.fixture.StudentFixture;
+import com.example.lms.common.reflection.ReflectionFieldSetter;
 import com.example.lms.domain.student.entity.Student;
 import com.example.lms.domain.student.repository.StudentRepository;
 import org.junit.jupiter.api.DisplayName;
@@ -36,6 +37,7 @@ class CustomStudentDetailsServiceTest {
     void loadUserByUsernameWithStudentLoginId() {
         // given
         Student student = StudentFixture.STUDENT_FIXTURE_1.createStudent();
+        ReflectionFieldSetter.setId(student, 1L);
         String loginId = student.getLoginId();
         when(studentRepository.findByLoginId(loginId)).thenReturn(Optional.of(student));
 
@@ -45,7 +47,7 @@ class CustomStudentDetailsServiceTest {
         // then
         assertAll(
                 () -> assertThat(userDetails).isNotNull(),
-                () -> assertThat(userDetails.getUsername()).isEqualTo(student.getLoginId()),
+                () -> assertThat(userDetails.getUsername()).isEqualTo(student.getId().toString()),
                 () -> assertThat(userDetails.getAuthorities())
                         .hasSize(1)
                         .extracting("authority")
@@ -64,7 +66,7 @@ class CustomStudentDetailsServiceTest {
         // when & then
         assertThatThrownBy(() -> customStudentDetailsService.loadUserByUsername(loginId))
                 .isInstanceOf(UsernameNotFoundException.class)
-                .hasMessageContaining("Student not found : " + loginId);
+                .hasMessageContaining("학생 정보를 찾을 수 없습니다. : " + loginId);
         verify(studentRepository, times(1)).findByLoginId(loginId);
     }
 
