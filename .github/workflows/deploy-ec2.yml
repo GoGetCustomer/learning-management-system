@@ -34,13 +34,7 @@ jobs:
         run: |
           cd lms
           ./gradlew clean build -x test
-          docker build \
-            --build-arg DB_HOST=${{ secrets.DB_HOST }} \
-            --build-arg DB_PORT=${{ secrets.DB_PORT }} \
-            --build-arg DB_NAME=${{ secrets.DB_NAME }} \
-            --build-arg DB_USERNAME=${{ secrets.DB_USERNAME }} \
-            --build-arg DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
-            -t ${{ secrets.DOCKERHUB_USERNAME }}/goget-customer:${{ github.sha }} .
+          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/goget-customer:${{ github.sha }} .
           docker tag ${{ secrets.DOCKERHUB_USERNAME }}/goget-customer:${{ github.sha }} ${{ secrets.DOCKERHUB_USERNAME }}/goget-customer:latest
 
       - name: Push Docker image to DockerHub
