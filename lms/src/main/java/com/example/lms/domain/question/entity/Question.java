@@ -6,6 +6,7 @@ import com.example.lms.domain.quiz.entity.Quiz;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,6 +43,7 @@ public class Question extends BaseTimeEntity {
         question.content = content;
         question.correct = correct;
         question.point = point;
+        quiz.getQuestions().add(question);
         return question;
 
     }
