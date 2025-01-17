@@ -6,6 +6,7 @@ import com.example.lms.domain.student.entity.Student;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @NoArgsConstructor
@@ -21,7 +22,7 @@ public class Answer extends BaseTimeEntity {
     @JoinColumn(name = "student_id", nullable = false)
     private Student student;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "question_id", nullable = false)
     private Question question;
 
@@ -34,6 +35,5 @@ public class Answer extends BaseTimeEntity {
         answerEntity.answer = answer;
         answerEntity.student = student;
         return answerEntity;
-
     }
 }

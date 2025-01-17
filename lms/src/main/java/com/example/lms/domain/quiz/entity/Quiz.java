@@ -5,6 +5,7 @@ import com.example.lms.domain.question.entity.Question;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -39,7 +40,10 @@ public class Quiz extends BaseTimeEntity {
         quiz.quizTitle = quizTitle;
         quiz.quizDueDate = quizDueDate;
         return quiz;
-
     }
 
+    public void updateQuizInfo(String quizTitle, LocalDateTime quizDueDate) {
+        this.quizTitle = quizTitle;
+        this.quizDueDate = quizDueDate;
+    }
 }
