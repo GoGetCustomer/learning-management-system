@@ -1,5 +1,6 @@
 package com.example.lms.common.fixture;
 
+import com.example.lms.domain.instructor.dto.InstructorCreateRequestDto;
 import com.example.lms.domain.instructor.entity.Instructor;
 import lombok.Getter;
 
@@ -40,5 +41,16 @@ public enum InstructorFixture {
 
     public Instructor createInstructor() {
         return Instructor.of(loginId, password, email, name, description);
+    }
+
+    public InstructorCreateRequestDto signupInstructor() {
+        return InstructorCreateRequestDto.builder()
+                .loginId(loginId)
+                .password(password)
+                .passwordCheck(password)
+                .email(email)
+                .name(name)
+                .description(description)
+                .build();
     }
 }
