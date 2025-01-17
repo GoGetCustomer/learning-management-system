@@ -13,6 +13,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -22,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @SpringBootTest
+@ActiveProfiles("local")
 @Transactional
 public class QuizSubmissionServiceTest {
 
@@ -47,18 +49,11 @@ public class QuizSubmissionServiceTest {
         );
         student = studentRepository.save(student);
 
-        Quiz quiz = new Quiz();
-        quiz.setQuizTitle("퀴즈 테스트");
-        quiz.setCourseId(1L);
-        quiz.setQuizDueDate(LocalDateTime.now().plusDays(1));
-        quiz = quizRepository.save(quiz);
+       Quiz quiz = Quiz.createQuiz(1L, "테스트 퀴즈", LocalDateTime.now().plusDays(7));
+       quiz = quizRepository.save(quiz);
 
-        Question question = new Question();
-        question.setQuiz(quiz);
-        question.setContent("2+2는?");
-        question.setCorrect("4");
-        question.setPoint(10);
-        question = questionRepository.save(question);
+       Question question = Question.createQuestion(quiz, "2+2는?", "4", 10);
+       question = questionRepository.save(question);
 
         QuizSubmissionRequest request = new QuizSubmissionRequest();
         request.setStudentId(student.getId());
