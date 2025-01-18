@@ -1,9 +1,6 @@
 package com.example.lms.common.config;
 
-import com.example.lms.common.auth.filter.CustomUsernamePasswordAuthenticationFilter;
-import com.example.lms.common.auth.filter.InstructorLoginFilter;
-import com.example.lms.common.auth.filter.JwtAuthenticationFilter;
-import com.example.lms.common.auth.filter.StudentLoginFilter;
+import com.example.lms.common.auth.filter.*;
 import com.example.lms.common.auth.jwt.TokenProvider;
 import com.example.lms.common.auth.service.CustomInstructorDetailsService;
 import com.example.lms.common.auth.service.CustomStudentDetailsService;
@@ -25,6 +22,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.logout.LogoutFilter;
 
 import java.util.List;
 
@@ -53,12 +51,10 @@ public class SecurityConfig {
 						.requestMatchers("/api/instructors/**").hasAuthority(Role.INSTRUCTOR.getAuthority())
 						.anyRequest().authenticated()
 				)
-				.addFilterBefore(new JwtAuthenticationFilter(tokenProvider),
-						CustomUsernamePasswordAuthenticationFilter.class)
-				.addFilterAt(new StudentLoginFilter(studentAuthenticationManager, tokenProvider, objectMapper),
-						UsernamePasswordAuthenticationFilter.class)
-				.addFilterAt(new InstructorLoginFilter(instructorAuthenticationManager, tokenProvider, objectMapper),
-						UsernamePasswordAuthenticationFilter.class);
+				.addFilterAt(new StudentLoginFilter(studentAuthenticationManager, tokenProvider, objectMapper), UsernamePasswordAuthenticationFilter.class)
+				.addFilterAt(new InstructorLoginFilter(instructorAuthenticationManager, tokenProvider, objectMapper), UsernamePasswordAuthenticationFilter.class)
+				.addFilterAfter(new JwtAuthenticationFilter(tokenProvider), CustomUsernamePasswordAuthenticationFilter.class)
+				.addFilterBefore(new CustomLogoutFilter(tokenProvider, objectMapper), LogoutFilter.class);
 		return http.build();
 	}
 

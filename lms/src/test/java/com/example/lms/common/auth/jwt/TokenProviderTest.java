@@ -255,6 +255,22 @@ class TokenProviderTest {
         assertThat(isValid).isFalse();
     }
 
+    @Test
+    @DisplayName("재발급 토큰을 무효화한다.")
+    void invalidateRefreshToken() {
+        //given
+        String accessToken = tokenProvider.createAccessToken(TEST_SUBJECT, TEST_ROLE_STUDENT, new Date());
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        when(request.getHeader(AUTHORIZATION_HEADER)).thenReturn(BEARER_PREFIX + accessToken);
+
+        //when
+        tokenProvider.invalidateRefreshToken(request);
+
+        //then
+        verify(redisService, times(1))
+                .deleteRefreshToken(TEST_ROLE_STUDENT + REDIS_PREFIX_REFRESH + TEST_SUBJECT);
+    }
+
     private Claims parseTokenSubject(String token, String secretKey) {
         return Jwts.parser()
                 .verifyWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
