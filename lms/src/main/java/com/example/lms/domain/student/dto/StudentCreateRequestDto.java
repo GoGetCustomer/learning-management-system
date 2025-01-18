@@ -49,9 +49,6 @@ public class StudentCreateRequestDto {
 
     @Builder
     public StudentCreateRequestDto(String loginId, String password, String passwordCheck, String name, String email) {
-        if (!password.equals(passwordCheck)) {
-            throw new IllegalArgumentException("비밀번호 확인이 일치하지 않습니다.");
-        }
         this.loginId = loginId;
         this.password = password;
         this.passwordCheck = passwordCheck;
