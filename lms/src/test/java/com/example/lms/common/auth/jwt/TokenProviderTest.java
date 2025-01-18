@@ -258,13 +258,8 @@ class TokenProviderTest {
     @Test
     @DisplayName("재발급 토큰을 무효화한다.")
     void invalidateRefreshToken() {
-        //given
-        String accessToken = tokenProvider.createAccessToken(TEST_SUBJECT, TEST_ROLE_STUDENT, new Date());
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        when(request.getHeader(AUTHORIZATION_HEADER)).thenReturn(BEARER_PREFIX + accessToken);
-
         //when
-        tokenProvider.invalidateRefreshToken(request);
+        tokenProvider.invalidateRefreshToken(TEST_ROLE_STUDENT, TEST_SUBJECT);
 
         //then
         verify(redisService, times(1))

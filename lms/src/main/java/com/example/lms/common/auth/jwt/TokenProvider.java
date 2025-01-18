@@ -152,10 +152,8 @@ public class TokenProvider {
         return false;
     }
 
-    public void invalidateRefreshToken(HttpServletRequest request) {
-        String accessToken = resolveAccessToken(request);
-        Claims claimsByAccessToken = getClaimsByAccessToken(accessToken);
-        redisService.deleteRefreshToken(claimsByAccessToken.get(AUTHORITIES_KEY).toString() + REDIS_PREFIX_REFRESH + claimsByAccessToken.getSubject());
+    public void invalidateRefreshToken(String role, String subject) {
+        redisService.deleteRefreshToken(role + REDIS_PREFIX_REFRESH + subject);
     }
 
     public long getRefreshTokenExpirationSeconds() {
