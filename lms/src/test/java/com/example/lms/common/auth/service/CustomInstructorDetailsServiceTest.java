@@ -39,7 +39,7 @@ class CustomInstructorDetailsServiceTest {
         Instructor instructor = InstructorFixture.INSTRUCTOR_FIXTURE_1.createInstructor();
         ReflectionFieldSetter.setId(instructor, 1L);
         String loginId = instructor.getLoginId();
-        when(instructorRepository.findByLoginId(loginId)).thenReturn(Optional.of(instructor));
+        when(instructorRepository.findByLoginIdAndNotDeleted(loginId)).thenReturn(Optional.of(instructor));
 
         // when
         UserDetails userDetails = customInstructorDetailsService.loadUserByUsername(loginId);
@@ -53,7 +53,7 @@ class CustomInstructorDetailsServiceTest {
                         .extracting("authority")
                         .containsExactly(INSTRUCTOR.getAuthority())
         );
-        verify(instructorRepository, times(1)).findByLoginId(loginId);
+        verify(instructorRepository, times(1)).findByLoginIdAndNotDeleted(loginId);
     }
 
     @DisplayName("아이디를 찾을 수 없는 강사는 오류를 반환한다.")
@@ -61,13 +61,13 @@ class CustomInstructorDetailsServiceTest {
     void loadUserByUsernameUserNotFound() {
         // given
         String loginId = "none";
-        when(instructorRepository.findByLoginId(loginId)).thenReturn(Optional.empty());
+        when(instructorRepository.findByLoginIdAndNotDeleted(loginId)).thenReturn(Optional.empty());
 
         // when & then
         assertThatThrownBy(() -> customInstructorDetailsService.loadUserByUsername(loginId))
                 .isInstanceOf(UsernameNotFoundException.class)
                 .hasMessageContaining("강사 정보를 찾을 수 없습니다. : " + loginId);
-        verify(instructorRepository, times(1)).findByLoginId(loginId);
+        verify(instructorRepository, times(1)).findByLoginIdAndNotDeleted(loginId);
     }
 
     @Test
@@ -77,7 +77,7 @@ class CustomInstructorDetailsServiceTest {
         Instructor instructor = InstructorFixture.INSTRUCTOR_FIXTURE_1.createInstructor();
         ReflectionFieldSetter.setId(instructor, 1L);
         Long instructorId = instructor.getId();
-        when(instructorRepository.findById(instructorId)).thenReturn(Optional.of(instructor));
+        when(instructorRepository.findByIdAndNotDeleted(instructorId)).thenReturn(Optional.of(instructor));
 
         // when
         UserDetails userDetails = customInstructorDetailsService.loadUserByInstructorId(instructorId.toString());
@@ -91,7 +91,7 @@ class CustomInstructorDetailsServiceTest {
                         .extracting("authority")
                         .containsExactly(INSTRUCTOR.getAuthority())
         );
-        verify(instructorRepository, times(1)).findById(instructorId);
+        verify(instructorRepository, times(1)).findByIdAndNotDeleted(instructorId);
     }
 
     @DisplayName("식별자로 찾을 수 없는 강사는 오류를 반환한다.")
@@ -99,13 +99,13 @@ class CustomInstructorDetailsServiceTest {
     void loadUserByInstructorIdUserNotFound() {
         // given
         String instructorId = "1";
-        when(instructorRepository.findById(Long.valueOf(instructorId))).thenReturn(Optional.empty());
+        when(instructorRepository.findByIdAndNotDeleted(Long.valueOf(instructorId))).thenReturn(Optional.empty());
 
         // when & then
         assertThatThrownBy(() -> customInstructorDetailsService.loadUserByInstructorId(instructorId))
                 .isInstanceOf(UsernameNotFoundException.class)
                 .hasMessageContaining("강사 정보를 찾을 수 없습니다. : " + instructorId);
-        verify(instructorRepository, times(1)).findById(Long.valueOf(instructorId));
+        verify(instructorRepository, times(1)).findByIdAndNotDeleted(Long.valueOf(instructorId));
     }
 
 }

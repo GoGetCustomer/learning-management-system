@@ -39,7 +39,7 @@ class CustomStudentDetailsServiceTest {
         Student student = StudentFixture.STUDENT_FIXTURE_1.createStudent();
         ReflectionFieldSetter.setId(student, 1L);
         String loginId = student.getLoginId();
-        when(studentRepository.findByLoginId(loginId)).thenReturn(Optional.of(student));
+        when(studentRepository.findByLoginIdAndNotDeleted(loginId)).thenReturn(Optional.of(student));
 
         // when
         UserDetails userDetails = customStudentDetailsService.loadUserByUsername(loginId);
@@ -53,7 +53,7 @@ class CustomStudentDetailsServiceTest {
                         .extracting("authority")
                         .containsExactly(STUDENT.getAuthority())
         );
-        verify(studentRepository, times(1)).findByLoginId(loginId);
+        verify(studentRepository, times(1)).findByLoginIdAndNotDeleted(loginId);
     }
 
     @DisplayName("아이디를 찾을 수 없는 학생은 오류를 반환한다.")
@@ -61,13 +61,13 @@ class CustomStudentDetailsServiceTest {
     void loadUserByUsernameUserNotFound() {
         // given
         String loginId = "none";
-        when(studentRepository.findByLoginId(loginId)).thenReturn(Optional.empty());
+        when(studentRepository.findByLoginIdAndNotDeleted(loginId)).thenReturn(Optional.empty());
 
         // when & then
         assertThatThrownBy(() -> customStudentDetailsService.loadUserByUsername(loginId))
                 .isInstanceOf(UsernameNotFoundException.class)
                 .hasMessageContaining("학생 정보를 찾을 수 없습니다. : " + loginId);
-        verify(studentRepository, times(1)).findByLoginId(loginId);
+        verify(studentRepository, times(1)).findByLoginIdAndNotDeleted(loginId);
     }
 
     @Test
@@ -77,7 +77,7 @@ class CustomStudentDetailsServiceTest {
         Student student = StudentFixture.STUDENT_FIXTURE_1.createStudent();
         ReflectionFieldSetter.setId(student, 1L);
         Long studentId = student.getId();
-        when(studentRepository.findById(studentId)).thenReturn(Optional.of(student));
+        when(studentRepository.findByIdAndNotDeleted(studentId)).thenReturn(Optional.of(student));
 
         // when
         UserDetails userDetails = customStudentDetailsService.loadUserByStudentId(studentId.toString());
@@ -91,7 +91,7 @@ class CustomStudentDetailsServiceTest {
                         .extracting("authority")
                         .containsExactly(STUDENT.getAuthority())
         );
-        verify(studentRepository, times(1)).findById(studentId);
+        verify(studentRepository, times(1)).findByIdAndNotDeleted(studentId);
     }
 
     @DisplayName("아이디를 찾을 수 없는 학생은 오류를 반환한다.")
@@ -99,13 +99,13 @@ class CustomStudentDetailsServiceTest {
     void loadUserByStudentIdUserNotFound() {
         // given
         String studentId = "1";
-        when(studentRepository.findById(Long.valueOf(studentId))).thenReturn(Optional.empty());
+        when(studentRepository.findByIdAndNotDeleted(Long.valueOf(studentId))).thenReturn(Optional.empty());
 
         // when & then
         assertThatThrownBy(() -> customStudentDetailsService.loadUserByStudentId(studentId))
                 .isInstanceOf(UsernameNotFoundException.class)
                 .hasMessageContaining("학생 정보를 찾을 수 없습니다. : " + studentId);
-        verify(studentRepository, times(1)).findById(Long.valueOf(studentId));
+        verify(studentRepository, times(1)).findByIdAndNotDeleted(Long.valueOf(studentId));
     }
 
 }

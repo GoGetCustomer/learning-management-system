@@ -5,6 +5,7 @@ import com.example.lms.domain.user.enums.Role;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -13,6 +14,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DataJpaTest
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @ActiveProfiles("test")
 class StudentTest {
 
@@ -37,7 +39,8 @@ class StudentTest {
                 () -> assertThat(savedStudent.getEmail()).isEqualTo(student.getEmail()),
                 () -> assertThat(savedStudent.getPassword()).isEqualTo(student.getPassword()),
                 () -> assertThat(savedStudent.getName()).isEqualTo(student.getName()),
-                () -> assertThat(savedStudent.getRole()).isEqualTo(Role.STUDENT)
+                () -> assertThat(savedStudent.getRole()).isEqualTo(Role.STUDENT),
+                () -> assertThat(savedStudent.getIsDeleted()).isFalse()
         );
     }
 }

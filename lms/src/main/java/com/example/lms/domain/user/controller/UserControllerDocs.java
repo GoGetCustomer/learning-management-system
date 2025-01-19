@@ -18,4 +18,11 @@ public interface UserControllerDocs {
     })
     @PostMapping("/logout")
     ResponseEntity<?> logout(HttpServletRequest request);
+
+    @Operation(summary = "회원탈퇴 요청", description = "**성공 응답 데이터:**  브라우저 쿠키 초기화")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "회원 탈퇴 완료"),
+            @ApiResponse(responseCode = "401", description = "유효한 토큰이 아닙니다. 재 로그인 후 탈퇴를 시도하세요."),
+    })
+    ResponseEntity<?> delete(HttpServletRequest request);
 }
