@@ -1,6 +1,8 @@
 package com.example.lms.common.config;
 
 import com.example.lms.common.auth.filter.*;
+import com.example.lms.common.auth.handler.CustomAccessDeniedHandler;
+import com.example.lms.common.auth.handler.CustomAuthenticationEntryPoint;
 import com.example.lms.common.auth.jwt.TokenProvider;
 import com.example.lms.common.auth.service.CustomInstructorDetailsService;
 import com.example.lms.common.auth.service.CustomStudentDetailsService;
@@ -54,7 +56,10 @@ public class SecurityConfig {
 				.addFilterAt(new StudentLoginFilter(studentAuthenticationManager, tokenProvider, objectMapper), UsernamePasswordAuthenticationFilter.class)
 				.addFilterAt(new InstructorLoginFilter(instructorAuthenticationManager, tokenProvider, objectMapper), UsernamePasswordAuthenticationFilter.class)
 				.addFilterAfter(new JwtAuthenticationFilter(tokenProvider), CustomUsernamePasswordAuthenticationFilter.class)
-				.addFilterBefore(new CustomLogoutFilter(tokenProvider, objectMapper), LogoutFilter.class);
+				.addFilterBefore(new CustomLogoutFilter(tokenProvider, objectMapper), LogoutFilter.class)
+				.exceptionHandling((exceptionHandling) -> exceptionHandling
+								.authenticationEntryPoint(new CustomAuthenticationEntryPoint(objectMapper))
+								.accessDeniedHandler(new CustomAccessDeniedHandler(objectMapper)));
 		return http.build();
 	}
 
