@@ -45,4 +45,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
         filterChain.doFilter(request, response);
     }
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String requestURI = request.getRequestURI();
+        return requestURI.equals("/api/students/login") || requestURI.equals("/api/instructors/login") || requestURI.equals("/api/users/reissue");
+    }
 }

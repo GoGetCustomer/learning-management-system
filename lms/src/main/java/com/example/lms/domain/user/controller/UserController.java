@@ -1,16 +1,19 @@
 package com.example.lms.domain.user.controller;
 
+import com.example.lms.common.auth.jwt.TokenProvider;
+import com.example.lms.common.utils.CookieUtil;
 import com.example.lms.domain.user.service.UserService;
+import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Date;
 
 import static com.example.lms.common.auth.jwt.TokenConstants.*;
 import static com.example.lms.common.utils.CookieUtil.*;
+import static org.springframework.http.HttpStatus.*;
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.OK;
 
@@ -20,6 +23,7 @@ import static org.springframework.http.HttpStatus.OK;
 public class UserController implements UserControllerDocs{
 
     private final UserService userService;
+    private final TokenProvider tokenProvider;
 
     @PostMapping("/logout")
     public ResponseEntity<?> logout(HttpServletRequest request) {
@@ -31,6 +35,30 @@ public class UserController implements UserControllerDocs{
         userService.delete(request);
         return ResponseEntity.status(CREATED)
                 .header(COOKIE_PREFIX, createCookie(REFRESH_TOKEN_COOKIE_NAME, null, COOKIE_EXPIRATION_DELETE).toString())
+                .body(null);
+    }
+
+    @GetMapping("/reissue")
+    public ResponseEntity<?> reissue(HttpServletRequest request) {
+        String accessToken = tokenProvider.resolveAccessToken(request);
+        Claims claimsByAccessToken = tokenProvider.getClaimsByAccessToken(accessToken);
+
+        String role = claimsByAccessToken.get(AUTHORITIES_KEY).toString();
+        String subject = claimsByAccessToken.getSubject();
+        String requestRefreshToken = CookieUtil.findCookieByName(request, REFRESH_TOKEN_COOKIE_NAME).getValue();
+
+        boolean isValid = tokenProvider.validateRefreshTokenWithAccessTokenInfo(role, subject, requestRefreshToken);
+        if (!isValid) {
+            return ResponseEntity.status(UNAUTHORIZED)
+                    .header(COOKIE_PREFIX, createCookie(REFRESH_TOKEN_COOKIE_NAME, null, COOKIE_EXPIRATION_DELETE).toString())
+                    .body(null);
+        }
+
+        String newAccessToken = tokenProvider.createAccessToken(subject, role, new Date());
+        String newRefreshToken = tokenProvider.createRefreshToken(subject, role, new Date());
+        return ResponseEntity.status(OK)
+                .header(AUTHORIZATION_HEADER, newAccessToken)
+                .header(COOKIE_PREFIX, createCookie(REFRESH_TOKEN_COOKIE_NAME, newRefreshToken, tokenProvider.getRefreshTokenExpirationSeconds()).toString())
                 .body(null);
     }
 }

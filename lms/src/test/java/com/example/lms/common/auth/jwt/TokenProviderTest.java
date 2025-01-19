@@ -266,6 +266,69 @@ class TokenProviderTest {
                 .deleteRefreshToken(TEST_ROLE_STUDENT + REDIS_PREFIX_REFRESH + TEST_SUBJECT);
     }
 
+    @Test
+    @DisplayName("요청된 refreshToken이 Redis의 토큰과 일치한다.")
+    void validateRefreshTokenWithAccessTokenInfo() {
+        //given
+        String redisKey = TEST_ROLE_STUDENT + TokenConstants.REDIS_PREFIX_REFRESH + TEST_SUBJECT;
+        String requestRefreshToken = "validRefreshToken";
+        when(redisService.getRefreshToken(redisKey)).thenReturn(requestRefreshToken);
+
+        //when
+        boolean isValid = tokenProvider.validateRefreshTokenWithAccessTokenInfo(
+                TEST_ROLE_STUDENT,
+                TEST_SUBJECT,
+                requestRefreshToken
+        );
+
+        //then
+        assertThat(isValid).isTrue();
+        verify(redisService, times(1)).getRefreshToken(redisKey);
+    }
+
+    @Test
+    @DisplayName("요청된 refreshToken이 Redis의 토큰과 불일치한다.")
+    void invalidateRefreshTokenWithAccessTokenInfo() {
+        //given
+        String redisKey = TEST_ROLE_STUDENT + TokenConstants.REDIS_PREFIX_REFRESH + TEST_SUBJECT;
+        String requestRefreshToken = "invalidRefreshToken";
+        String redisRefreshToken = "refreshToken";
+        when(redisService.getRefreshToken(redisKey)).thenReturn(redisRefreshToken);
+
+        //when
+        boolean isValid = tokenProvider.validateRefreshTokenWithAccessTokenInfo(
+                TEST_ROLE_STUDENT,
+                TEST_SUBJECT,
+                requestRefreshToken
+        );
+
+        //then
+        assertThat(isValid).isFalse();
+        verify(redisService, times(1)).getRefreshToken(redisKey);
+        verify(redisService, times(1)).deleteRefreshToken(redisKey);
+    }
+
+    @Test
+    @DisplayName("요청된 accessToken정보에 맞는 refreshToken이 Redis에 없다.")
+    void validateRefreshTokenWithAccessTokenInfoIsNull() {
+        //given
+        String redisKey = TEST_ROLE_STUDENT + TokenConstants.REDIS_PREFIX_REFRESH + TEST_SUBJECT;
+        String requestRefreshToken = "anyRefreshToken";
+        when(redisService.getRefreshToken(redisKey)).thenReturn(null);
+
+        //when
+        boolean isValid = tokenProvider.validateRefreshTokenWithAccessTokenInfo(
+                TEST_ROLE_STUDENT,
+                TEST_SUBJECT,
+                requestRefreshToken
+        );
+
+        //then
+        assertThat(isValid).isFalse();
+        verify(redisService, times(1)).getRefreshToken(redisKey);
+        verify(redisService, times(1)).deleteRefreshToken(redisKey);
+    }
+
     private Claims parseTokenSubject(String token, String secretKey) {
         return Jwts.parser()
                 .verifyWith(Keys.hmacShaKeyFor(secretKey.getBytes()))

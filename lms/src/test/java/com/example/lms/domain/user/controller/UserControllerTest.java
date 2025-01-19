@@ -10,6 +10,7 @@ import com.example.lms.domain.student.repository.StudentRepository;
 import com.example.lms.domain.user.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -23,14 +24,15 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
+import java.util.Date;
+
 import static com.example.lms.common.auth.jwt.TokenConstants.*;
 import static com.example.lms.common.auth.jwt.TokenConstants.AUTHORITIES_KEY;
 import static com.example.lms.common.auth.jwt.TokenConstants.AUTHORIZATION_HEADER;
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -133,7 +135,7 @@ class UserControllerTest {
 
     @Test
     @WithMockCustom(role = ROLE_STUDENT)
-    @DisplayName("API 학생 회원 요청 테스트")
+    @DisplayName("API 학생 회원 탈퇴 요청 테스트")
     void studentDelete() throws Exception {
         //given
         Claims claims = Mockito.mock(Claims.class);
@@ -141,7 +143,7 @@ class UserControllerTest {
                 .thenReturn(TEST_ACCESS_TOKEN);
         Mockito.when(tokenProvider.getClaimsByAccessToken(TEST_ACCESS_TOKEN))
                 .thenReturn(claims);
-        Mockito.when(claims.getSubject()).thenReturn("1");
+        Mockito.when(claims.getSubject()).thenReturn(TEST_SUBJECT);
         Mockito.when(claims.get(AUTHORITIES_KEY)).thenReturn(ROLE_STUDENT);
 
         //when
@@ -165,7 +167,7 @@ class UserControllerTest {
 
     @Test
     @WithMockCustom(role = ROLE_INSTRUCTOR)
-    @DisplayName("API 강사 회원 요청 테스트")
+    @DisplayName("API 강사 회원 탈퇴 요청 테스트")
     void instructorDelete() throws Exception {
         //given
         Claims claims = Mockito.mock(Claims.class);
@@ -173,7 +175,7 @@ class UserControllerTest {
                 .thenReturn(TEST_ACCESS_TOKEN);
         Mockito.when(tokenProvider.getClaimsByAccessToken(TEST_ACCESS_TOKEN))
                 .thenReturn(claims);
-        Mockito.when(claims.getSubject()).thenReturn("1");
+        Mockito.when(claims.getSubject()).thenReturn(TEST_SUBJECT);
         Mockito.when(claims.get(AUTHORITIES_KEY)).thenReturn(ROLE_INSTRUCTOR);
 
         //when
@@ -193,5 +195,44 @@ class UserControllerTest {
                 .andDo(print());
         verify(userService).delete(any());
         verify(userService, Mockito.times(1)).delete(Mockito.any(HttpServletRequest.class));
+    }
+
+    @Test
+    @WithMockCustom(role = ROLE_STUDENT)
+    @DisplayName("API 토큰 재발급 요청 테스트")
+    void reissueToken() throws Exception {
+        // given
+        String requestRefreshToken = "testRefreshToken";
+
+        Claims claims = Mockito.mock(Claims.class);
+        Mockito.when(tokenProvider.resolveAccessToken(Mockito.any(HttpServletRequest.class))).thenReturn(TEST_ACCESS_TOKEN);
+        Mockito.when(tokenProvider.getClaimsByAccessToken(TEST_ACCESS_TOKEN)).thenReturn(claims);
+        Mockito.when(claims.getSubject()).thenReturn(TEST_SUBJECT);
+        Mockito.when(claims.get(AUTHORITIES_KEY)).thenReturn(ROLE_STUDENT);
+        when(tokenProvider.validateRefreshTokenWithAccessTokenInfo(ROLE_STUDENT, TEST_SUBJECT, requestRefreshToken)).thenReturn(true);
+
+        String newAccessToken = "newAccessToken";
+        String newRefreshToken = "newRefreshToken";
+        Mockito.when(tokenProvider.createAccessToken(eq(TEST_SUBJECT), eq(ROLE_STUDENT), any(Date.class))).thenReturn(newAccessToken);
+        Mockito.when(tokenProvider.createRefreshToken(eq(TEST_SUBJECT), eq(ROLE_STUDENT), any(Date.class))).thenReturn(newRefreshToken);
+        Mockito.when(tokenProvider.getRefreshTokenExpirationSeconds()).thenReturn(3600L);
+
+        // when
+        ResultActions actions = mockMvc.perform(
+                get(USER_API_BASE_PATH + "/reissue")
+                        .header(AUTHORIZATION_HEADER, BEARER_PREFIX + TEST_ACCESS_TOKEN)
+                        .cookie(new Cookie(REFRESH_TOKEN_COOKIE_NAME, requestRefreshToken)));
+
+        // then
+        actions
+                .andExpect(status().isOk())
+                .andExpect(header().string(AUTHORIZATION_HEADER, newAccessToken))
+                .andExpect(header().exists(HttpHeaders.SET_COOKIE))
+                .andExpect(header().string(HttpHeaders.SET_COOKIE, containsString("refresh_token=" + newRefreshToken)))
+                .andExpect(header().string(HttpHeaders.SET_COOKIE, containsString("Path=/")))
+                .andExpect(header().string(HttpHeaders.SET_COOKIE, containsString("Max-Age=" + 3600L)))
+                .andExpect(header().string(HttpHeaders.SET_COOKIE, containsString("HttpOnly")))
+                .andExpect(header().string(HttpHeaders.SET_COOKIE, containsString("SameSite=Strict")))
+                .andDo(print());
     }
 }

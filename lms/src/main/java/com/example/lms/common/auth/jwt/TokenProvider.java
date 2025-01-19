@@ -126,9 +126,11 @@ public class TokenProvider {
                     .build()
                     .parseSignedClaims(token)
                     .getPayload();
+        } catch (ExpiredJwtException e) {
+            return e.getClaims();
         } catch (JwtException e) {
             log.error("잘못된 jwt 토큰입니다. {}", e.getMessage());
-            return null;
+            throw new IllegalArgumentException("잘못된 jwt 토큰 입니다.");
         }
     }
 
@@ -154,6 +156,20 @@ public class TokenProvider {
 
     public void invalidateRefreshToken(String role, String subject) {
         redisService.deleteRefreshToken(role + REDIS_PREFIX_REFRESH + subject);
+    }
+
+    public boolean validateRefreshTokenWithAccessTokenInfo(String role, String subject, String requestRefreshToken) {
+        String redisRefreshTokenKey = role + REDIS_PREFIX_REFRESH + subject;
+        String refreshToken = redisService.getRefreshToken(redisRefreshTokenKey);
+
+        // 무결성 검증이 실패한 경우 초기화 진행
+        if (!requestRefreshToken.equals(refreshToken)) {
+            log.warn("{}-{}: reissue fail ({})", subject, role, new Date());
+            redisService.deleteRefreshToken(redisRefreshTokenKey);
+            return false;
+        }
+        log.info("{}-{}: reissue ({})", subject, role, new Date());
+        return true;
     }
 
     public long getRefreshTokenExpirationSeconds() {
