@@ -1,6 +1,7 @@
 package com.example.lms.common.auth.service;
 
 import com.example.lms.common.fixture.StudentFixture;
+import com.example.lms.common.reflection.ReflectionFieldSetter;
 import com.example.lms.domain.student.entity.Student;
 import com.example.lms.domain.student.repository.StudentRepository;
 import org.junit.jupiter.api.DisplayName;
@@ -36,8 +37,9 @@ class CustomStudentDetailsServiceTest {
     void loadUserByUsernameWithStudentLoginId() {
         // given
         Student student = StudentFixture.STUDENT_FIXTURE_1.createStudent();
+        ReflectionFieldSetter.setId(student, 1L);
         String loginId = student.getLoginId();
-        when(studentRepository.findByLoginId(loginId)).thenReturn(Optional.of(student));
+        when(studentRepository.findByLoginIdAndNotDeleted(loginId)).thenReturn(Optional.of(student));
 
         // when
         UserDetails userDetails = customStudentDetailsService.loadUserByUsername(loginId);
@@ -45,13 +47,13 @@ class CustomStudentDetailsServiceTest {
         // then
         assertAll(
                 () -> assertThat(userDetails).isNotNull(),
-                () -> assertThat(userDetails.getUsername()).isEqualTo(student.getLoginId()),
+                () -> assertThat(userDetails.getUsername()).isEqualTo(student.getId().toString()),
                 () -> assertThat(userDetails.getAuthorities())
                         .hasSize(1)
                         .extracting("authority")
                         .containsExactly(STUDENT.getAuthority())
         );
-        verify(studentRepository, times(1)).findByLoginId(loginId);
+        verify(studentRepository, times(1)).findByLoginIdAndNotDeleted(loginId);
     }
 
     @DisplayName("아이디를 찾을 수 없는 학생은 오류를 반환한다.")
@@ -59,13 +61,51 @@ class CustomStudentDetailsServiceTest {
     void loadUserByUsernameUserNotFound() {
         // given
         String loginId = "none";
-        when(studentRepository.findByLoginId(loginId)).thenReturn(Optional.empty());
+        when(studentRepository.findByLoginIdAndNotDeleted(loginId)).thenReturn(Optional.empty());
 
         // when & then
         assertThatThrownBy(() -> customStudentDetailsService.loadUserByUsername(loginId))
                 .isInstanceOf(UsernameNotFoundException.class)
-                .hasMessageContaining("Student not found : " + loginId);
-        verify(studentRepository, times(1)).findByLoginId(loginId);
+                .hasMessageContaining("학생 정보를 찾을 수 없습니다. : " + loginId);
+        verify(studentRepository, times(1)).findByLoginIdAndNotDeleted(loginId);
+    }
+
+    @Test
+    @DisplayName("학생 식별자로 UserDetails 객체를 반환한다.")
+    void loadUserByUsernameWithStudentId() {
+        // given
+        Student student = StudentFixture.STUDENT_FIXTURE_1.createStudent();
+        ReflectionFieldSetter.setId(student, 1L);
+        Long studentId = student.getId();
+        when(studentRepository.findByIdAndNotDeleted(studentId)).thenReturn(Optional.of(student));
+
+        // when
+        UserDetails userDetails = customStudentDetailsService.loadUserByStudentId(studentId.toString());
+
+        // then
+        assertAll(
+                () -> assertThat(userDetails).isNotNull(),
+                () -> assertThat(userDetails.getUsername()).isEqualTo(student.getId().toString()),
+                () -> assertThat(userDetails.getAuthorities())
+                        .hasSize(1)
+                        .extracting("authority")
+                        .containsExactly(STUDENT.getAuthority())
+        );
+        verify(studentRepository, times(1)).findByIdAndNotDeleted(studentId);
+    }
+
+    @DisplayName("아이디를 찾을 수 없는 학생은 오류를 반환한다.")
+    @Test
+    void loadUserByStudentIdUserNotFound() {
+        // given
+        String studentId = "1";
+        when(studentRepository.findByIdAndNotDeleted(Long.valueOf(studentId))).thenReturn(Optional.empty());
+
+        // when & then
+        assertThatThrownBy(() -> customStudentDetailsService.loadUserByStudentId(studentId))
+                .isInstanceOf(UsernameNotFoundException.class)
+                .hasMessageContaining("학생 정보를 찾을 수 없습니다. : " + studentId);
+        verify(studentRepository, times(1)).findByIdAndNotDeleted(Long.valueOf(studentId));
     }
 
 }

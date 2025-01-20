@@ -10,9 +10,11 @@ import java.util.Collection;
 public class CustomUserDetails implements UserDetails {
 
     private final User user;
+    private final Long id;
 
-    public CustomUserDetails(User user) {
+    public CustomUserDetails(User user, Long id) {
         this.user = user;
+        this.id = id;
     }
 
     @Override
@@ -24,7 +26,7 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public String getUsername() {
-        return user.getLoginId();
+        return id.toString();
     }
 
     @Override

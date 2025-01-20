@@ -12,6 +12,7 @@ import com.example.lms.domain.quizGrade.entity.QuizGrade;
 import com.example.lms.domain.quizGrade.repository.QuizGradeRepository;
 import com.example.lms.domain.student.entity.Student;
 import com.example.lms.domain.student.repository.StudentRepository;
+import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,23 +45,27 @@ public class QuizSubmissionService {
             String submittedAnswer = entry.getValue();
 
             Question question = questionRepository.findById(questionId)
-                    .orElseThrow(() -> new IllegalArgumentException("질문을 찾을 수 없습니다."));
+                    .orElseThrow(() -> new IllegalArgumentException("문제를 찾을 수 없습니다."));
+
+            boolean isCorrect = question.getCorrect().equals(submittedAnswer);
+            totalPoints += question.getPoint();
+            if (isCorrect) {
+                correctPoints += question.getPoint();
+            }
 
             Answer answer = Answer.createAnswer(submittedAnswer, student, question);
             answerRepository.save(answer);
-
-            totalPoints += question.getPoint();
-            if (question.getCorrect().equals(submittedAnswer)) {
-                correctPoints += question.getPoint();
-            }
         }
 
-        QuizGrade quizGrade = new QuizGrade();
-        quizGrade.setStudent(student);
-        quizGrade.setQuiz(quiz);
-        quizGrade.setGrade((correctPoints * 100) / totalPoints);
-        quizGradeRepository.save(quizGrade);
+            int grade = (correctPoints * 100) / totalPoints;
+            QuizGrade quizGrade = QuizGrade.create(student, quiz, grade);
+            quizGradeRepository.save(quizGrade);
 
-        return new QuizSubmissionResponse("success", "퀴즈 답안이 성공적으로 제출되었습니다.");
-    }
+            return QuizSubmissionResponse.builder()
+                    .status("success")
+                    .message("퀴즈 답안이 성공적으로 제출되었습니다.")
+                    .totalScore(totalPoints)
+                    .correctScore(correctPoints)
+                    .build();
+        }
 }
