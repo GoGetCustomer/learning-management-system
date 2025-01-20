@@ -39,4 +39,8 @@ public abstract class User extends BaseTimeEntity {
         this.role = role;
         this.isDeleted = false;
     }
+
+    public void updatePassword(String password) {
+        this.password = password;
+    }
 }

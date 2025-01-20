@@ -7,6 +7,7 @@ import com.example.lms.common.config.SecurityConfig;
 import com.example.lms.common.config.WithMockCustom;
 import com.example.lms.domain.instructor.repository.InstructorRepository;
 import com.example.lms.domain.student.repository.StudentRepository;
+import com.example.lms.domain.user.dto.UserUpdatePasswordRequestDto;
 import com.example.lms.domain.user.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
@@ -32,6 +33,7 @@ import static com.example.lms.common.auth.jwt.TokenConstants.AUTHORIZATION_HEADE
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
+import static org.springframework.http.MediaType.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -234,5 +236,79 @@ class UserControllerTest {
                 .andExpect(header().string(HttpHeaders.SET_COOKIE, containsString("HttpOnly")))
                 .andExpect(header().string(HttpHeaders.SET_COOKIE, containsString("SameSite=Strict")))
                 .andDo(print());
+    }
+
+    @Test
+    @WithMockCustom(role = ROLE_STUDENT)
+    @DisplayName("API 학생 비밀번호 변경 요청 테스트")
+    void updateStudentPassword() throws Exception {
+        //given
+        String password = "password1234@";
+        String newPassword = "newPassword1234@";
+        String newPasswordCheck = "newPassword1234@";
+
+        UserUpdatePasswordRequestDto requestDto = new UserUpdatePasswordRequestDto(
+                password,
+                newPassword,
+                newPasswordCheck
+        );
+
+        String requestBody = objectMapper.writeValueAsString(requestDto);
+        doNothing().when(userService).updatePassword(any(UserUpdatePasswordRequestDto.class));
+
+        //when
+        ResultActions actions = mockMvc.perform(
+                put(USER_API_BASE_PATH + "/password")
+                        .contentType(APPLICATION_JSON)
+                        .content(requestBody)
+                        .header(AUTHORIZATION_HEADER, BEARER_PREFIX + TEST_ACCESS_TOKEN));
+        //then
+        actions
+                .andExpect(status().isCreated())
+                .andExpect(header().exists(HttpHeaders.SET_COOKIE))
+                .andExpect(header().string(HttpHeaders.SET_COOKIE, containsString("refresh_token=;")))
+                .andExpect(header().string(HttpHeaders.SET_COOKIE, containsString("Path=/")))
+                .andExpect(header().string(HttpHeaders.SET_COOKIE, containsString("Max-Age=0")))
+                .andExpect(header().string(HttpHeaders.SET_COOKIE, containsString("HttpOnly")))
+                .andExpect(header().string(HttpHeaders.SET_COOKIE, containsString("SameSite=Strict")))
+                .andDo(print());
+        verify(userService, times(1)).updatePassword(any(UserUpdatePasswordRequestDto.class));
+    }
+
+    @Test
+    @WithMockCustom(role = ROLE_INSTRUCTOR)
+    @DisplayName("API 강사 비밀번호 변경 요청 테스트")
+    void updateInstructorPassword() throws Exception {
+        //given
+        String password = "password1234@";
+        String newPassword = "newPassword1234@";
+        String newPasswordCheck = "newPassword1234@";
+
+        UserUpdatePasswordRequestDto requestDto = new UserUpdatePasswordRequestDto(
+                password,
+                newPassword,
+                newPasswordCheck
+        );
+
+        String requestBody = objectMapper.writeValueAsString(requestDto);
+        doNothing().when(userService).updatePassword(any(UserUpdatePasswordRequestDto.class));
+
+        //when
+        ResultActions actions = mockMvc.perform(
+                put(USER_API_BASE_PATH + "/password")
+                        .contentType("application/json")
+                        .content(requestBody)
+                        .header(AUTHORIZATION_HEADER, BEARER_PREFIX + TEST_ACCESS_TOKEN));
+        //then
+        actions
+                .andExpect(status().isCreated())
+                .andExpect(header().exists(HttpHeaders.SET_COOKIE))
+                .andExpect(header().string(HttpHeaders.SET_COOKIE, containsString("refresh_token=;")))
+                .andExpect(header().string(HttpHeaders.SET_COOKIE, containsString("Path=/")))
+                .andExpect(header().string(HttpHeaders.SET_COOKIE, containsString("Max-Age=0")))
+                .andExpect(header().string(HttpHeaders.SET_COOKIE, containsString("HttpOnly")))
+                .andExpect(header().string(HttpHeaders.SET_COOKIE, containsString("SameSite=Strict")))
+                .andDo(print());
+        verify(userService, times(1)).updatePassword(any(UserUpdatePasswordRequestDto.class));
     }
 }

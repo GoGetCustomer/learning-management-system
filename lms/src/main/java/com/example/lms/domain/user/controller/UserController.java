@@ -2,11 +2,14 @@ package com.example.lms.domain.user.controller;
 
 import com.example.lms.common.auth.jwt.TokenProvider;
 import com.example.lms.common.utils.CookieUtil;
+import com.example.lms.common.validation.ValidationSequence;
+import com.example.lms.domain.user.dto.UserUpdatePasswordRequestDto;
 import com.example.lms.domain.user.service.UserService;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
@@ -59,6 +62,14 @@ public class UserController implements UserControllerDocs{
         return ResponseEntity.status(OK)
                 .header(AUTHORIZATION_HEADER, newAccessToken)
                 .header(COOKIE_PREFIX, createCookie(REFRESH_TOKEN_COOKIE_NAME, newRefreshToken, tokenProvider.getRefreshTokenExpirationSeconds()).toString())
+                .body(null);
+    }
+
+    @PutMapping("/password")
+    public ResponseEntity<?> updatePassword(@Validated(ValidationSequence.class) @RequestBody UserUpdatePasswordRequestDto userUpdatePasswordRequestDto) {
+        userService.updatePassword(userUpdatePasswordRequestDto);
+        return ResponseEntity.status(CREATED)
+                .header(COOKIE_PREFIX, createCookie(REFRESH_TOKEN_COOKIE_NAME, null, COOKIE_EXPIRATION_DELETE).toString())
                 .body(null);
     }
 }
