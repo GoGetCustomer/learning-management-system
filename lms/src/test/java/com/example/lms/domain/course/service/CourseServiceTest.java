@@ -1,16 +1,20 @@
 package com.example.lms.domain.course.service;
 
 
+import com.example.lms.common.config.WithMockCustom;
 import com.example.lms.common.fixture.CourseFixture;
 import com.example.lms.common.fixture.InstructorFixture;
 import com.example.lms.domain.course.dto.request.CourseCreateRequestDto;
+import com.example.lms.domain.course.dto.request.CourseUpdateRequestDto;
 import com.example.lms.domain.course.dto.response.CourseCreateResponseDto;
 
+import com.example.lms.domain.course.dto.response.CourseUpdateResponseDto;
 import com.example.lms.domain.course.entity.Course;
 import com.example.lms.domain.course.mapper.CourseMapper;
 import com.example.lms.domain.course.repository.CourseRepository;
 import com.example.lms.domain.instructor.entity.Instructor;
 import com.example.lms.domain.instructor.repository.InstructorRepository;
+import com.example.lms.domain.teaching.entity.Teaching;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -26,6 +30,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 
 
+import java.time.LocalDate;
 import java.util.Optional;
 
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
@@ -96,6 +101,49 @@ public class CourseServiceTest {
 
         verify(instructorRepository, times(1)).findByLoginIdAndNotDeleted(loginId);
         verify(courseMapper, times(1)).toEntity(requestDto);
+        verify(courseRepository, times(1)).save(any(Course.class));
+    }
+
+    @Test
+    @WithMockCustom(id = 1L, role = "ROLE_INSTRUCTOR")
+    @DisplayName("강좌를 성공적으로 업데이트합니다.")
+    void updateCourse_success() {
+        // given
+        Long courseId = 1L;
+        CourseUpdateRequestDto requestDto = CourseFixture.COURSE_FIXTURE_2.toUpdateRequestDto(courseId);
+        String loginId = "testLoginId";
+
+        UserDetails userDetails = User.withUsername(loginId)
+                .password("password1234@")
+                .roles("INSTRUCTOR")
+                .build();
+        Authentication authentication = new UsernamePasswordAuthenticationToken(
+                userDetails, null, userDetails.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        Teaching teaching = Teaching.of(instructor, course);
+        course.addTeaching(teaching);
+
+        when(instructorRepository.findByLoginIdAndNotDeleted("testLoginId"))
+                .thenReturn(Optional.of(instructor));
+        when(courseRepository.findById(courseId))
+                .thenReturn(Optional.of(course));
+        when(courseRepository.save(any(Course.class)))
+                .thenReturn(course);
+        when(courseMapper.toUpdateResponseDto(course))
+                .thenReturn(CourseFixture.COURSE_FIXTURE_2.toUpdateResponseDto(courseId));
+
+        // when
+        CourseUpdateResponseDto response = courseService.updateCourse(courseId, requestDto);
+
+        // then
+        assertSoftly(softly -> {
+            softly.assertThat(response).isNotNull();
+            softly.assertThat(response.getId()).isEqualTo(courseId);
+            softly.assertThat(response.getCourseTitle()).isEqualTo(CourseFixture.COURSE_FIXTURE_2.getCourseTitle());
+        });
+
+        verify(courseRepository, times(1)).findById(courseId);
         verify(courseRepository, times(1)).save(any(Course.class));
     }
 }
