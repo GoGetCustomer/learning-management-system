@@ -24,7 +24,7 @@ public class UserUpdatePasswordRequestDto {
             message = "비밀번호는 8~16자리수여야 합니다. 영문 대소문자, 숫자, 특수문자를 포함 해야 합니다.",
             groups = ValidationGroups.PatternGroup.class)
     @Schema(description = "비밀번호는 8~16자리 수 입니다. 영문 대소문자, 숫자, 특수문자를 포함합니다.",
-            example = "gogoet1234@")
+            example = "goget1234@")
     private String newPassword;
 
     @NotBlank(message = "새로운 비밀번호 확인이 입력되지 않았습니다.", groups = ValidationGroups.NotBlankGroup.class)

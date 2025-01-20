@@ -15,7 +15,7 @@ public class StudentCreateRequestDto {
     @Pattern(regexp = "^[a-z0-9]{4,20}$", message = "아이디는 영어 소문자와 숫자만 사용하여 4~20자리여야 합니다.",
             groups = ValidationGroups.PatternGroup.class)
     @Schema(description = "아이디는 영어 소문자와 숫자만 사용하여 4~20자리입니다",
-            example = "student1234")
+            example = "helloworld")
     private String loginId;
 
     @NotBlank(message = "비밀번호가 입력되지 않았습니다.", groups = ValidationGroups.NotBlankGroup.class)
