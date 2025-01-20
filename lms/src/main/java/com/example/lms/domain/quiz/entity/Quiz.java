@@ -1,7 +1,9 @@
 package com.example.lms.domain.quiz.entity;
 
 import com.example.lms.common.base.BaseTimeEntity;
+import com.example.lms.domain.course.entity.Course;
 import com.example.lms.domain.question.entity.Question;
+import com.example.lms.domain.student.entity.Student;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,11 +21,12 @@ public class Quiz extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long quizId;
+    @Column(name = "quiz_id")
+    private Long id;
 
-    // TODO : Course 엔티티와 연관 관계로 변경 예정
-    @Column(nullable = false)
-    private Long courseId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "student_id", nullable = false)
+    private Course course;
 
     @Column(nullable = false, length = 50)
     private String quizTitle;
@@ -34,9 +37,9 @@ public class Quiz extends BaseTimeEntity {
     @OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Question> questions = new ArrayList<>();
 
-    public static Quiz createQuiz(Long courseId, String quizTitle, LocalDateTime quizDueDate) {
+    public static Quiz createQuiz(Course course, String quizTitle, LocalDateTime quizDueDate) {
         Quiz quiz = new Quiz();
-        quiz.courseId = courseId;
+        quiz.course = course;
         quiz.quizTitle = quizTitle;
         quiz.quizDueDate = quizDueDate;
         return quiz;

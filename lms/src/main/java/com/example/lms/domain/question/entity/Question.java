@@ -19,7 +19,8 @@ public class Question extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long questionId;
+    @Column(name = "question_id")
+    private Long id;
 
     @ManyToOne
     @JoinColumn(name = "quiz_id", nullable = false)
