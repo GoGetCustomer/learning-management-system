@@ -11,18 +11,18 @@ public class SecurityConfig {
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		return http
-			.csrf(AbstractHttpConfigurer::disable)
-			.authorizeHttpRequests(auth -> auth
-				.requestMatchers(SWAGGER_PATTERNS).permitAll()
-				.anyRequest().authenticated()
-			)
-			.build();
+				.csrf(AbstractHttpConfigurer::disable)
+				.authorizeHttpRequests(auth -> auth
+						.requestMatchers(SWAGGER_PATTERNS).permitAll()
+						.requestMatchers("/api/quizzes/**").permitAll()
+						.anyRequest().authenticated()
+				)
+				.build();
 	}
 
 	private static final String[] SWAGGER_PATTERNS = {
-		"/swagger-ui/**",
-		"/actuator/**",
-		"/v3/api-docs/**",
+			"/swagger-ui/**",
+			"/actuator/**",
+			"/v3/api-docs/**",
 	};
-
 }
