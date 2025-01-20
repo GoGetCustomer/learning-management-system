@@ -1,5 +1,6 @@
 package com.example.lms.common.fixture;
 
+import com.example.lms.domain.student.dto.StudentCreateRequestDto;
 import com.example.lms.domain.student.entity.Student;
 import lombok.Getter;
 
@@ -23,5 +24,15 @@ public enum StudentFixture {
 
     public Student createStudent() {
         return Student.of(loginId, password, email, name);
+    }
+
+    public StudentCreateRequestDto signUpStudent() {
+        return StudentCreateRequestDto.builder()
+                .loginId(loginId)
+                .password(password)
+                .passwordCheck(password)
+                .email(email)
+                .name(name)
+                .build();
     }
 }

@@ -16,6 +16,7 @@ public class Submission {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "submission_id", nullable = false)
     private Long id;
 
     @ManyToOne
@@ -26,8 +27,10 @@ public class Submission {
     @JoinColumn(name = "student_id", nullable = false)
     private Student student;
 
+    @Column(name = "file_url", nullable = false, length = 300)
     private String fileUrl;
 
+    @Column(name = "submitted_at", nullable = false)
     private LocalDateTime submittedAt;
 
     @Builder
