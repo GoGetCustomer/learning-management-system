@@ -76,13 +76,14 @@ public class CourseController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
-    @GetMapping("/instructor/{instructorId}")
-    @Operation(summary = "강사별 강좌 조회", description = "특정 강사가 담당하는 모든 강좌를 조회합니다.")
+    @GetMapping
+    @Operation(summary = "강사별 강좌 조회", description = "특정 강사가 담당하는 모든 강좌를 조회합니다. 강사 ID를 제공하지 않으면 모든 강좌를 조회합니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "강좌 목록 조회 성공", content = @Content(schema = @Schema(implementation = CourseResponseDto.class))),
             @ApiResponse(responseCode = "404", description = "강사를 찾을 수 없음", content = @Content)
     })
-    public ResponseEntity<List<CourseResponseDto>> getCourseByInstructorId(@PathVariable Long instructorId) {
+    public ResponseEntity<List<CourseResponseDto>> getCourseByInstructorId(
+            @RequestParam(required = false) Long instructorId) {
         List<CourseResponseDto> responses = courseService.getCourseByInstructorId(instructorId);
         return ResponseEntity.status(HttpStatus.OK).body(responses);
     }
