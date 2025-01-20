@@ -33,9 +33,9 @@ public class CourseService {
     @Transactional
     public CourseCreateResponseDto createCourse(CourseCreateRequestDto requestDto) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String loginId = authentication.getName();
+        Long id = Long.valueOf(authentication.getName());
 
-        Instructor instructor = instructorRepository.findByLoginIdAndNotDeleted(loginId)
+        Instructor instructor = instructorRepository.findByIdAndNotDeleted(id)
                 .orElseThrow(() -> new IllegalArgumentException("로그인된 사용자가 강사가 아닙니다."));
 
         Course course = courseMapper.toEntity(requestDto);
@@ -50,9 +50,9 @@ public class CourseService {
     @Transactional
     public CourseUpdateResponseDto updateCourse(Long courseId, CourseUpdateRequestDto requestDto) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String loginId = authentication.getName();
+        Long id = Long.valueOf(authentication.getName());
 
-        Instructor instructor = instructorRepository.findByLoginIdAndNotDeleted(loginId)
+        Instructor instructor = instructorRepository.findByIdAndNotDeleted(id)
                 .orElseThrow(() -> new IllegalArgumentException("로그인된 사용자가 강사가 아닙니다."));
 
         Course course = courseRepository.findById(courseId)
@@ -74,9 +74,9 @@ public class CourseService {
     @Transactional
     public void deleteCourse(Long courseId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String loginId = authentication.getName();
+        Long id = Long.valueOf(authentication.getName());
 
-        Instructor instructor = instructorRepository.findByLoginIdAndNotDeleted(loginId)
+        Instructor instructor = instructorRepository.findByIdAndNotDeleted(id)
                 .orElseThrow(() -> new IllegalArgumentException("로그인된 사용자가 강사가 아닙니다."));
 
         Course course = courseRepository.findById(courseId)
