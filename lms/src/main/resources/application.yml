@@ -22,3 +22,13 @@ spring:
     defer-datasource-initialization: true
     show-sql: true
     open-in-view: false
+
+server:
+  host: ${DEV_URL:http://localhost:8080}
+  port: 8080
+
+jwt:
+  access-secret-key: ${ACCESS_SECRET_KEY}
+  refresh-secret-key: ${REFRESH_SECRET_KEY}
+  access-token-validity-in-seconds: ${ACCESS_VALIDITY_SECONDS}
+  refresh-token-validity-in-seconds: ${REFRESH_VALIDITY_SECONDS}
