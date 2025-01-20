@@ -25,7 +25,7 @@ public class Course extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "course_id")
-    private Long courseId;
+    private Long id;
 
     @Column(name = "course_title", length = 50, nullable = false)
     private String courseTitle;
@@ -56,7 +56,7 @@ public class Course extends BaseTimeEntity {
 
     @Builder
     public Course(Long courseId, String courseTitle, String courseDescription, LocalDate startDate, LocalDate endDate, int courseCapacity) {
-        this.courseId = courseId;
+        this.id = courseId;
         this.courseTitle = courseTitle;
         this.courseDescription = courseDescription;
         this.startDate = startDate;
