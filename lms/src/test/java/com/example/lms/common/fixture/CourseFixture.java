@@ -72,7 +72,7 @@ public enum CourseFixture {
 
     public CourseCreateResponseDto toCreateResponseDto(Long courseId) {
         return CourseCreateResponseDto.builder()
-                .courseId(courseId)
+                .id(courseId)
                 .courseTitle(courseTitle)
                 .courseDescription(courseDescription)
                 .startDate(startDate)
@@ -83,7 +83,7 @@ public enum CourseFixture {
 
     public CourseUpdateResponseDto toUpdateResponseDto(Long courseId) {
         return CourseUpdateResponseDto.builder()
-                .courseId(courseId)
+                .id(courseId)
                 .courseTitle(courseTitle)
                 .courseDescription(courseDescription)
                 .startDate(startDate)
