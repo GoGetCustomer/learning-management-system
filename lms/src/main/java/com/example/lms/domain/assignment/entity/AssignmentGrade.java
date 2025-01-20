@@ -17,6 +17,7 @@ public class AssignmentGrade {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "assignment_grade_id", nullable = false)
     private Long id;
 
     @ManyToOne
@@ -27,12 +28,16 @@ public class AssignmentGrade {
     @JoinColumn(name = "student_id", nullable = false)
     private Student student;
 
+    @Column(name = "grade", nullable = false)
     private int grade;
 
+    @Column(name = "feedback", length = 300)
     private String feedback;
 
+    @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
+    @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
     @Builder
