@@ -28,11 +28,19 @@ public abstract class User extends BaseTimeEntity {
     @Column(name = "role", length = 20, nullable = false)
     private Role role;
 
+    @Column(name = "is_deleted", nullable = false)
+    private Boolean isDeleted;
+
     protected User(String loginId, String password, String email, String name, Role role) {
         this.loginId = loginId;
         this.password = password;
         this.email = email;
         this.name = name;
         this.role = role;
+        this.isDeleted = false;
+    }
+
+    public void updatePassword(String password) {
+        this.password = password;
     }
 }
