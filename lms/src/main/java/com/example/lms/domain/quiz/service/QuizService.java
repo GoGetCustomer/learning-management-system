@@ -83,7 +83,7 @@ public class QuizService {
 
     @Transactional(readOnly = true)
     public List<QuizResponse> getQuizzesByCourseId(Long courseId) {
-        List<Quiz> quizzes = quizRepository.findByCourse_CourseId(courseId);
+        List<Quiz> quizzes = quizRepository.findAllByCourseId(courseId);
 
         return quizzes.stream()
                 .map(quiz -> new QuizResponse(
