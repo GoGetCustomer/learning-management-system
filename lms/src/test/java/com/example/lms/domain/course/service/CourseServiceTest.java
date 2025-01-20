@@ -8,10 +8,12 @@ import com.example.lms.domain.course.dto.request.CourseCreateRequestDto;
 import com.example.lms.domain.course.dto.request.CourseUpdateRequestDto;
 import com.example.lms.domain.course.dto.response.CourseCreateResponseDto;
 
+import com.example.lms.domain.course.dto.response.CourseResponseDto;
 import com.example.lms.domain.course.dto.response.CourseUpdateResponseDto;
 import com.example.lms.domain.course.entity.Course;
 import com.example.lms.domain.course.mapper.CourseMapper;
 import com.example.lms.domain.course.repository.CourseRepository;
+import com.example.lms.domain.instructor.dto.InstructorInfo;
 import com.example.lms.domain.instructor.entity.Instructor;
 import com.example.lms.domain.instructor.repository.InstructorRepository;
 import com.example.lms.domain.teaching.entity.Teaching;
@@ -30,6 +32,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -58,11 +61,13 @@ public class CourseServiceTest {
     private SecurityContext securityContext;
 
     private Instructor instructor;
-    private Course course;
+    private Course course1;
+    private Course course2;
     @BeforeEach
     void setUp() {
         instructor = InstructorFixture.INSTRUCTOR_FIXTURE_1.createInstructor();
-        course = CourseFixture.COURSE_FIXTURE_1.createCourse();
+        course1 = CourseFixture.COURSE_FIXTURE_1.createCourse();
+        course2 = CourseFixture.COURSE_FIXTURE_2.createCourse();
     }
 
     @Test
@@ -83,9 +88,9 @@ public class CourseServiceTest {
         when(instructorRepository.findByLoginIdAndNotDeleted(loginId))
                 .thenReturn(Optional.of(instructor));
 
-        when(courseMapper.toEntity(requestDto)).thenReturn(course);
-        when(courseRepository.save(any(Course.class))).thenReturn(course);
-        when(courseMapper.toCreateResponseDto(course))
+        when(courseMapper.toEntity(requestDto)).thenReturn(course1);
+        when(courseRepository.save(any(Course.class))).thenReturn(course1);
+        when(courseMapper.toCreateResponseDto(course1))
                 .thenReturn(CourseFixture.COURSE_FIXTURE_1.toCreateResponseDto(1L));
 
         // when
@@ -121,16 +126,16 @@ public class CourseServiceTest {
                 userDetails, null, userDetails.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        Teaching teaching = Teaching.of(instructor, course);
-        course.addTeaching(teaching);
+        Teaching teaching = Teaching.of(instructor, course1);
+        course1.addTeaching(teaching);
 
         when(instructorRepository.findByLoginIdAndNotDeleted("testLoginId"))
                 .thenReturn(Optional.of(instructor));
         when(courseRepository.findById(courseId))
-                .thenReturn(Optional.of(course));
+                .thenReturn(Optional.of(course1));
         when(courseRepository.save(any(Course.class)))
-                .thenReturn(course);
-        when(courseMapper.toUpdateResponseDto(course))
+                .thenReturn(course1);
+        when(courseMapper.toUpdateResponseDto(course1))
                 .thenReturn(CourseFixture.COURSE_FIXTURE_2.toUpdateResponseDto(courseId));
 
         // when
@@ -162,13 +167,13 @@ public class CourseServiceTest {
                 userDetails, null, userDetails.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        Teaching teaching = Teaching.of(instructor, course);
-        course.addTeaching(teaching);
-        assertThat(course.getTeachings()).hasSize(1);
+        Teaching teaching = Teaching.of(instructor, course1);
+        course1.addTeaching(teaching);
+        assertThat(course1.getTeachings()).hasSize(1);
         when(instructorRepository.findByLoginIdAndNotDeleted(loginId))
                 .thenReturn(Optional.of(instructor));
         when(courseRepository.findById(courseId))
-                .thenReturn(Optional.of(course));
+                .thenReturn(Optional.of(course1));
 
         // when
 
@@ -176,9 +181,100 @@ public class CourseServiceTest {
 
         // then
         verify(courseRepository, times(1)).findById(1L);
-        verify(courseRepository, times(1)).delete(course);
+        verify(courseRepository, times(1)).delete(course1);
         assertSoftly(softly -> {
-            softly.assertThat(course.getTeachings()).isEmpty();
+            softly.assertThat(course1.getTeachings()).isEmpty();
         });
     }
+    @Test
+    @DisplayName("특정 courseId로 Course 조회")
+    void getCourseById_success() {
+        // given
+        when(courseRepository.findById(course1.getId())).thenReturn(Optional.of(course1));
+        InstructorInfo instructorInfo = InstructorInfo.builder()
+                .instructorId(instructor.getId())
+                .name(instructor.getName())
+                .email(instructor.getEmail())
+                .description(instructor.getDescription())
+                .build();
+
+        when(courseMapper.toResponseDto(eq(course1), any())).thenReturn(CourseFixture.COURSE_FIXTURE_1.toResponseDto(course1, instructorInfo));
+
+        // when
+        CourseResponseDto responseDto = courseService.getCourseById(course1.getId());
+
+        // then
+        assertSoftly(softly -> {
+            softly.assertThat(responseDto.getId()).isEqualTo(course1.getId());
+            softly.assertThat(responseDto.getCourseTitle()).isEqualTo(course1.getCourseTitle());
+        });
+
+        verify(courseRepository).findById(course1.getId());
+        verify(courseMapper).toResponseDto(eq(course1), any());
+    }
+
+    @Test
+    @DisplayName("특정 instructorId로 Course 목록 조회")
+    void getCourseByInstructorId_success() {
+        // given
+        when(instructorRepository.findById(1L))
+                .thenReturn(Optional.of(instructor));
+        when(courseRepository.findAllByInstructorId(1L))
+                .thenReturn(List.of(course1, course2));
+        InstructorInfo instructorInfo = InstructorInfo.builder()
+                .instructorId(1L)
+                .name(instructor.getName())
+                .email(instructor.getEmail())
+                .description(instructor.getDescription())
+                .build();
+        when(courseMapper.toResponseDto(eq(course1), any()))
+                .thenReturn(CourseFixture.COURSE_FIXTURE_1.toResponseDto(course1, instructorInfo));
+        when(courseMapper.toResponseDto(eq(course2), any()))
+                .thenReturn(CourseFixture.COURSE_FIXTURE_2.toResponseDto(course2, instructorInfo));
+
+        // when
+        List<CourseResponseDto> responses = courseService.getCourseByInstructorId(1L);
+
+        // then
+        assertSoftly(softly -> {
+            softly.assertThat(responses).hasSize(2);
+            softly.assertThat(responses.get(0).getId()).isEqualTo(course1.getId());
+            softly.assertThat(responses.get(1).getId()).isEqualTo(course2.getId());
+        });
+
+        verify(instructorRepository).findById(1L);
+        verify(courseRepository).findAllByInstructorId(1L);
+        verify(courseMapper).toResponseDto(eq(course1), any());
+        verify(courseMapper).toResponseDto(eq(course2), any());
+    }
+
+    @Test
+    @DisplayName("instructorId가 null일 경우 모든 Course 목록 조회")
+    void getCourseByInstructorId_nullInstructorId_success() {
+        // given
+        when(courseRepository.findAll()).thenReturn(List.of(course1, course2));
+        InstructorInfo instructorInfo = InstructorInfo.builder()
+                .instructorId(instructor.getId())
+                .name(instructor.getName())
+                .email(instructor.getEmail())
+                .description(instructor.getDescription())
+                .build();
+        when(courseMapper.toResponseDto(eq(course1), any())).thenReturn(CourseFixture.COURSE_FIXTURE_1.toResponseDto(course1, instructorInfo));
+        when(courseMapper.toResponseDto(eq(course2), any())).thenReturn(CourseFixture.COURSE_FIXTURE_2.toResponseDto(course2, instructorInfo));
+
+        // when
+        List<CourseResponseDto> responseDtos = courseService.getCourseByInstructorId(null);
+
+        // then
+        assertSoftly(softly -> {
+            softly.assertThat(responseDtos).hasSize(2);
+            softly.assertThat(responseDtos.get(0).getId()).isEqualTo(course1.getId());
+            softly.assertThat(responseDtos.get(1).getId()).isEqualTo(course2.getId());
+        });
+
+        verify(courseRepository).findAll();
+        verify(courseMapper).toResponseDto(eq(course1), any());
+        verify(courseMapper).toResponseDto(eq(course2), any());
+    }
+
 }
