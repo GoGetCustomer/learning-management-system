@@ -30,9 +30,9 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 
 
-import java.time.LocalDate;
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import static org.mockito.Mockito.*;
@@ -145,5 +145,40 @@ public class CourseServiceTest {
 
         verify(courseRepository, times(1)).findById(courseId);
         verify(courseRepository, times(1)).save(any(Course.class));
+    }
+
+    @Test
+    @DisplayName("강좌를 성공적으로 삭제합니다.")
+    void deleteCourse_success() {
+        // given
+        Long courseId = 1L;
+        String loginId = "testLoginId";
+
+        UserDetails userDetails = User.withUsername(loginId)
+                .password("password1234@")
+                .roles("INSTRUCTOR")
+                .build();
+        Authentication authentication = new UsernamePasswordAuthenticationToken(
+                userDetails, null, userDetails.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        Teaching teaching = Teaching.of(instructor, course);
+        course.addTeaching(teaching);
+        assertThat(course.getTeachings()).hasSize(1);
+        when(instructorRepository.findByLoginIdAndNotDeleted(loginId))
+                .thenReturn(Optional.of(instructor));
+        when(courseRepository.findById(courseId))
+                .thenReturn(Optional.of(course));
+
+        // when
+
+        courseService.deleteCourse(courseId);
+
+        // then
+        verify(courseRepository, times(1)).findById(1L);
+        verify(courseRepository, times(1)).delete(course);
+        assertSoftly(softly -> {
+            softly.assertThat(course.getTeachings()).isEmpty();
+        });
     }
 }
