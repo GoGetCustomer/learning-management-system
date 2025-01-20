@@ -1,4 +1,4 @@
-package com.example.lms.domain.student.conrtoller;
+package com.example.lms.domain.student.controller;
 
 import com.example.lms.common.auth.dto.LoginRequestDto;
 import com.example.lms.domain.student.dto.StudentCreateRequestDto;
