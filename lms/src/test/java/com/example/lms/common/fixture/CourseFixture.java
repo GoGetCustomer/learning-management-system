@@ -6,6 +6,7 @@ import com.example.lms.domain.course.dto.response.CourseCreateResponseDto;
 import com.example.lms.domain.course.dto.response.CourseResponseDto;
 import com.example.lms.domain.course.dto.response.CourseUpdateResponseDto;
 import com.example.lms.domain.course.entity.Course;
+import com.example.lms.domain.instructor.dto.InstructorInfo;
 import lombok.Getter;
 
 import java.time.LocalDate;
@@ -59,14 +60,15 @@ public enum CourseFixture {
                 .build();
     }
 
-    public CourseResponseDto toResponseDto(Long courseId) {
+    public CourseResponseDto toResponseDto(Course course, InstructorInfo instructorInfo) {
         return CourseResponseDto.builder()
-                .courseId(courseId)
-                .courseTitle(courseTitle)
-                .courseDescription(courseDescription)
-                .startDate(startDate)
-                .endDate(endDate)
-                .courseStudents(0)
+                .id(course.getId())
+                .courseTitle(course.getCourseTitle())
+                .courseDescription(course.getCourseDescription())
+                .startDate(course.getStartDate())
+                .endDate(course.getEndDate())
+                .instructorInfo(instructorInfo)
+                .courseStudents(course.getRegistrations() != null ? course.getRegistrations().size() : 0)
                 .build();
     }
 
@@ -98,6 +100,19 @@ public enum CourseFixture {
                 .courseDescription(courseDescription)
                 .startDate(startDate)
                 .endDate(endDate)
+                .courseCapacity(courseCapacity)
+                .build();
+    }
+
+    public CourseResponseDto toCourseResponseDto(Long courseId) {
+        return CourseResponseDto.builder()
+                .id(courseId)
+                .courseTitle(courseTitle)
+                .courseDescription(courseDescription)
+                .instructorInfo(InstructorFixture.INSTRUCTOR_FIXTURE_1.toInstructorInfo(1L))
+                .startDate(startDate)
+                .endDate(endDate)
+                .courseStudents(0)
                 .courseCapacity(courseCapacity)
                 .build();
     }
