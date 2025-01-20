@@ -66,4 +66,22 @@ public class CourseService {
         return courseMapper.toUpdateResponseDto(savedCourse);
     }
 
+    @Transactional
+    public void deleteCourse(Long courseId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String loginId = authentication.getName();
+
+        Instructor instructor = instructorRepository.findByLoginIdAndNotDeleted(loginId)
+                .orElseThrow(() -> new IllegalArgumentException("로그인된 사용자가 강사가 아닙니다."));
+
+        Course course = courseRepository.findById(courseId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 강좌가 존재하지 않습니다."));
+
+        if (!course.belongsToInstructor(instructor)) {
+            throw new IllegalArgumentException("해당 강좌를 삭제할 권한이 없습니다.");
+        }
+        course.getTeachings().clear();
+        courseRepository.delete(course);
+    }
+
 }
