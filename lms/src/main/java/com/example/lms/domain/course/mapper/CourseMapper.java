@@ -25,12 +25,6 @@ public interface CourseMapper {
 
     CourseUpdateResponseDto toUpdateResponseDto(Course course);
 
-//    @Mapping(target = "courseStudents", expression = "java(course.getRegistrations().size())")
-//    @Mapping(target = "instructor", expression = "java(course.getTeachings().isEmpty() ? null : toInstructorInfo(course.getTeachings().get(0).getInstructor()))")
-//    CourseResponseDto toResponseDto(Course course);
-
-    InstructorInfo toInstructorInfo(Instructor instructor);
-
     default void updateEntityFromDto(CourseUpdateRequestDto dto, @MappingTarget Course course) {
         course.updateCourse(
                 dto.getCourseTitle(),
