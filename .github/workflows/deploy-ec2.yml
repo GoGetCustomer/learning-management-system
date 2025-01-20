@@ -69,4 +69,6 @@ jobs:
               -e DB_NAME=${{ secrets.DB_NAME }} \
               -e DB_USERNAME=${{ secrets.DB_USERNAME }} \
               -e DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
+              -e ACCESS_SECRET_KEY=${{ secrets.JWT_KEY }} \
+              -e REFRESH_SECRET_KEY=${{ secrets.JWT_KEY }} \
               ${{ secrets.DOCKERHUB_USERNAME }}/goget-customer:latest
