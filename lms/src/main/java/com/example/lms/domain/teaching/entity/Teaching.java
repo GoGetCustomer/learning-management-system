@@ -6,8 +6,11 @@ import com.example.lms.domain.student.entity.Student;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.time.LocalDate;
 
 import static jakarta.persistence.FetchType.LAZY;
 
@@ -30,4 +33,26 @@ public class Teaching {
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "course_id")
     private Course course;
+
+    @Builder
+    public Teaching(Instructor instructor, Course course) {
+        this.instructor = instructor;
+        setCourse(course);
+    }
+
+    public static Teaching of(Instructor instructor, Course course) {
+        return Teaching.builder()
+                .instructor(instructor)
+                .course(course)
+                .build();
+    }
+
+    public void setCourse(Course course) {
+        this.course = course;
+
+        if (!course.getTeachings().contains(this)) {
+            course.addTeaching(this); // Course와의 양방향 동기화
+        }
+    }
+
 }

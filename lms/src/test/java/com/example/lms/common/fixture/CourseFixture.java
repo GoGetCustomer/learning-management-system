@@ -1,9 +1,11 @@
 package com.example.lms.common.fixture;
 
 import com.example.lms.domain.course.dto.request.CourseCreateRequestDto;
+import com.example.lms.domain.course.dto.request.CourseUpdateRequestDto;
+import com.example.lms.domain.course.dto.response.CourseCreateResponseDto;
 import com.example.lms.domain.course.dto.response.CourseResponseDto;
+import com.example.lms.domain.course.dto.response.CourseUpdateResponseDto;
 import com.example.lms.domain.course.entity.Course;
-import com.example.lms.domain.instructor.entity.Instructor;
 import lombok.Getter;
 
 import java.time.LocalDate;
@@ -37,37 +39,66 @@ public enum CourseFixture {
         this.courseCapacity = courseCapacity;
     }
 
-    public Course createCourse(Instructor instructor) {
+    public Course createCourse() {
         return Course.builder()
                 .courseTitle(courseTitle)
                 .courseDescription(courseDescription)
                 .startDate(startDate)
                 .endDate(endDate)
                 .courseCapacity(courseCapacity)
-                .instructor(instructor)
                 .build();
     }
 
-    public CourseCreateRequestDto toCreateRequestDto(Long instructorId) {
+    public CourseCreateRequestDto toCreateRequestDto(Long courseId) {
         return CourseCreateRequestDto.builder()
                 .courseTitle(courseTitle)
                 .courseDescription(courseDescription)
                 .startDate(startDate)
                 .endDate(endDate)
                 .courseCapacity(courseCapacity)
-                .instructorId(instructorId)
                 .build();
     }
 
-    public CourseResponseDto toResponseDto(Long courseId, String instructorName) {
+    public CourseResponseDto toResponseDto(Long courseId) {
         return CourseResponseDto.builder()
                 .courseId(courseId)
                 .courseTitle(courseTitle)
                 .courseDescription(courseDescription)
                 .startDate(startDate)
                 .endDate(endDate)
-                .instructorName(instructorName)
-                .courseStudents(0) // MapStruct에서 constant 설정
+                .courseStudents(0)
+                .build();
+    }
+
+    public CourseCreateResponseDto toCreateResponseDto(Long courseId) {
+        return CourseCreateResponseDto.builder()
+                .id(courseId)
+                .courseTitle(courseTitle)
+                .courseDescription(courseDescription)
+                .startDate(startDate)
+                .endDate(endDate)
+                .courseStudents(0)
+                .build();
+    }
+
+    public CourseUpdateResponseDto toUpdateResponseDto(Long courseId) {
+        return CourseUpdateResponseDto.builder()
+                .id(courseId)
+                .courseTitle(courseTitle)
+                .courseDescription(courseDescription)
+                .startDate(startDate)
+                .endDate(endDate)
+                .courseCapacity(courseCapacity)
+                .build();
+    }
+
+    public CourseUpdateRequestDto toUpdateRequestDto(Long courseId) {
+        return CourseUpdateRequestDto.builder()
+                .courseTitle(courseTitle)
+                .courseDescription(courseDescription)
+                .startDate(startDate)
+                .endDate(endDate)
+                .courseCapacity(courseCapacity)
                 .build();
     }
 }
