@@ -55,8 +55,8 @@ public class Course extends BaseTimeEntity {
     private List<Registration> registrations = new ArrayList<>();
 
     @Builder
-    public Course(Long courseId, String courseTitle, String courseDescription, LocalDate startDate, LocalDate endDate, int courseCapacity) {
-        this.id = courseId;
+    public Course(Long id, String courseTitle, String courseDescription, LocalDate startDate, LocalDate endDate, int courseCapacity) {
+        this.id = id;
         this.courseTitle = courseTitle;
         this.courseDescription = courseDescription;
         this.startDate = startDate;
