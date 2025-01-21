@@ -46,4 +46,9 @@ public class Instructor extends User {
                 .description(description)
                 .build();
     }
+
+    public void update(String name, String description, String email) {
+        super.updateUser(name, email);
+        this.description = description;
+    }
 }

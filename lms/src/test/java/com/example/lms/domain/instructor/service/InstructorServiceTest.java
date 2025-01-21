@@ -5,6 +5,7 @@ import com.example.lms.common.fixture.InstructorFixture;
 import com.example.lms.domain.instructor.dto.InstructorBasicInfoResponseDto;
 import com.example.lms.domain.instructor.dto.InstructorCreateRequestDto;
 import com.example.lms.domain.instructor.dto.InstructorPersonalInfoResponseDto;
+import com.example.lms.domain.instructor.dto.InstructorUpdateRequestDto;
 import com.example.lms.domain.instructor.entity.Instructor;
 import com.example.lms.domain.instructor.repository.InstructorRepository;
 import com.example.lms.domain.user.enums.Role;
@@ -76,6 +77,7 @@ class InstructorServiceTest {
     }
 
     @Test
+    @DisplayName("강사 기본정보를 조회한다.")
     void instructorBasicInfoTest() {
         //given
         Instructor instructor = instructorRepository.save(InstructorFixture.INSTRUCTOR_FIXTURE_1.createInstructor());
@@ -88,6 +90,34 @@ class InstructorServiceTest {
                 () -> assertThat(basicInfo.getName()).isEqualTo(instructor.getName()),
                 () -> assertThat(basicInfo.getDescription()).isEqualTo(instructor.getDescription()),
                 () -> assertThat(basicInfo.getEmail()).isEqualTo(instructor.getEmail())
+        );
+    }
+
+    @Test
+    @DisplayName("강사 정보를 수정한다.")
+    void instructorUpdateTest() {
+        //given
+        Instructor instructor = instructorRepository.save(InstructorFixture.INSTRUCTOR_FIXTURE_1.createInstructor());
+        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(instructor.getId(), null,
+                List.of(new SimpleGrantedAuthority(Role.INSTRUCTOR.getAuthority()))
+        );
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        String updateName = "김일타";
+        String updateEmail = "hello@gmail.com";
+        String updateDescription = "지금은 바빠서 나중에 개강하겠습니다.";
+        InstructorUpdateRequestDto instructorUpdateRequestDto = new InstructorUpdateRequestDto(updateName, updateEmail, updateDescription);
+
+        //when
+        Long id = instructorService.update(instructorUpdateRequestDto);
+
+        //then
+        Instructor updateInstructor = instructorRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("강사를 찾지 못했습니다."));
+        assertAll(
+                () -> assertThat(updateInstructor.getName()).isEqualTo(updateName),
+                () -> assertThat(updateInstructor.getEmail()).isEqualTo(updateEmail),
+                () -> assertThat(updateInstructor.getDescription()).isEqualTo(updateDescription)
         );
     }
 }

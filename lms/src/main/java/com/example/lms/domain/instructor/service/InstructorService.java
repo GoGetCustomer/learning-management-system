@@ -3,6 +3,7 @@ package com.example.lms.domain.instructor.service;
 import com.example.lms.domain.instructor.dto.InstructorBasicInfoResponseDto;
 import com.example.lms.domain.instructor.dto.InstructorCreateRequestDto;
 import com.example.lms.domain.instructor.dto.InstructorPersonalInfoResponseDto;
+import com.example.lms.domain.instructor.dto.InstructorUpdateRequestDto;
 import com.example.lms.domain.instructor.entity.Instructor;
 import com.example.lms.domain.instructor.repository.InstructorRepository;
 import lombok.RequiredArgsConstructor;
@@ -53,6 +54,18 @@ public class InstructorService {
                 .description(instructor.getDescription())
                 .email(instructor.getEmail())
                 .build();
+    }
+
+    @Transactional
+    public Long update(InstructorUpdateRequestDto instructorUpdateRequestDto) {
+        checkEmailDuplicate(instructorUpdateRequestDto.getEmail());
+        Instructor instructor = instructorRepository.findById(Long.valueOf(SecurityContextHolder.getContext().getAuthentication().getName()))
+                .orElseThrow(() -> new IllegalArgumentException("강사 정보를 찾지 못했습니다."));
+        instructor.update(
+                instructorUpdateRequestDto.getName(),
+                instructorUpdateRequestDto.getDescription(),
+                instructorUpdateRequestDto.getEmail());
+        return instructor.getId();
     }
 
     private void checkPassword(String password, String passwordCheck) {

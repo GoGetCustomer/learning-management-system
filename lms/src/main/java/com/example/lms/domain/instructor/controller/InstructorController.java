@@ -5,6 +5,7 @@ import com.example.lms.common.validation.ValidationSequence;
 import com.example.lms.domain.instructor.dto.InstructorBasicInfoResponseDto;
 import com.example.lms.domain.instructor.dto.InstructorCreateRequestDto;
 import com.example.lms.domain.instructor.dto.InstructorPersonalInfoResponseDto;
+import com.example.lms.domain.instructor.dto.InstructorUpdateRequestDto;
 import com.example.lms.domain.instructor.service.InstructorService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -38,5 +39,10 @@ public class InstructorController implements InstructorControllerDocs{
     @GetMapping("/{instructorId}")
     public ResponseEntity<InstructorBasicInfoResponseDto> getBasicInfo(@PathVariable("instructorId") Long id) {
         return ResponseEntity.status(OK).body(instructorService.findBasicInfo(id));
+    }
+
+    @PutMapping
+    public ResponseEntity<Long> updateInstructor(@Validated(ValidationSequence.class) @RequestBody InstructorUpdateRequestDto instructorUpdateRequestDto) {
+        return ResponseEntity.status(CREATED).body(instructorService.update(instructorUpdateRequestDto));
     }
 }
