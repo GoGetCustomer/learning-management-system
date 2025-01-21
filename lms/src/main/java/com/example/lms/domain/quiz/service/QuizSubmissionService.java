@@ -47,6 +47,10 @@ public class QuizSubmissionService {
             Question question = questionRepository.findById(questionId)
                     .orElseThrow(() -> new IllegalArgumentException("문제를 찾을 수 없습니다."));
 
+            if (!question.getQuiz().getId().equals(quizId)) {
+                throw new IllegalArgumentException("질문이 해당 퀴즈에 속하지 않습니다.");
+            }
+
             boolean isCorrect = question.getCorrect().equals(submittedAnswer);
             totalPoints += question.getPoint();
             if (isCorrect) {
@@ -57,7 +61,7 @@ public class QuizSubmissionService {
             answerRepository.save(answer);
         }
 
-            int grade = (correctPoints * 100) / totalPoints;
+            int grade = totalPoints > 0 ? (correctPoints * 100) / totalPoints : 0;
             QuizGrade quizGrade = QuizGrade.create(student, quiz, grade);
             quizGradeRepository.save(quizGrade);
 
