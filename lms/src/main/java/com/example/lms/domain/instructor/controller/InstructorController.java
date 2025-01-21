@@ -2,6 +2,7 @@ package com.example.lms.domain.instructor.controller;
 
 import com.example.lms.common.auth.dto.LoginRequestDto;
 import com.example.lms.common.validation.ValidationSequence;
+import com.example.lms.domain.instructor.dto.InstructorBasicInfoResponseDto;
 import com.example.lms.domain.instructor.dto.InstructorCreateRequestDto;
 import com.example.lms.domain.instructor.dto.InstructorPersonalInfoResponseDto;
 import com.example.lms.domain.instructor.service.InstructorService;
@@ -32,5 +33,10 @@ public class InstructorController implements InstructorControllerDocs{
     @GetMapping
     public ResponseEntity<InstructorPersonalInfoResponseDto> getPersonalInfo() {
         return ResponseEntity.status(OK).body(instructorService.findPersonalInfo());
+    }
+
+    @GetMapping("/{instructorId}")
+    public ResponseEntity<InstructorBasicInfoResponseDto> getBasicInfo(@PathVariable("instructorId") Long id) {
+        return ResponseEntity.status(OK).body(instructorService.findBasicInfo(id));
     }
 }

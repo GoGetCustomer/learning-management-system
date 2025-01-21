@@ -1,6 +1,7 @@
 package com.example.lms.domain.instructor.controller;
 
 import com.example.lms.common.auth.dto.LoginRequestDto;
+import com.example.lms.domain.instructor.dto.InstructorBasicInfoResponseDto;
 import com.example.lms.domain.instructor.dto.InstructorCreateRequestDto;
 import com.example.lms.domain.instructor.dto.InstructorPersonalInfoResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
@@ -35,4 +36,11 @@ public interface InstructorControllerDocs {
             @ApiResponse(responseCode = "403", description = "권한이 없습니다."),
     })
     public ResponseEntity<InstructorPersonalInfoResponseDto> getPersonalInfo();
+
+    @Operation(summary = "강사 기본정보 조회 요청", description = " 강사의 기본정보를 반환합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "강사 기본정보 조회 완료"),
+            @ApiResponse(responseCode = "403", description = "권한이 없습니다."),
+    })
+    public ResponseEntity<InstructorBasicInfoResponseDto> getBasicInfo(Long id);
 }

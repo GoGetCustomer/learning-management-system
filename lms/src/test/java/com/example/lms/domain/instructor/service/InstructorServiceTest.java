@@ -2,6 +2,7 @@ package com.example.lms.domain.instructor.service;
 
 
 import com.example.lms.common.fixture.InstructorFixture;
+import com.example.lms.domain.instructor.dto.InstructorBasicInfoResponseDto;
 import com.example.lms.domain.instructor.dto.InstructorCreateRequestDto;
 import com.example.lms.domain.instructor.dto.InstructorPersonalInfoResponseDto;
 import com.example.lms.domain.instructor.entity.Instructor;
@@ -18,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
@@ -72,6 +72,22 @@ class InstructorServiceTest {
                 () -> assertThat(personalInfo.getName()).isEqualTo(instructor.getName()),
                 () -> assertThat(personalInfo.getEmail()).isEqualTo(instructor.getEmail()),
                 () -> assertThat(personalInfo.getDescription()).isEqualTo(instructor.getDescription())
+        );
+    }
+
+    @Test
+    void instructorBasicInfoTest() {
+        //given
+        Instructor instructor = instructorRepository.save(InstructorFixture.INSTRUCTOR_FIXTURE_1.createInstructor());
+
+        //when
+        InstructorBasicInfoResponseDto basicInfo = instructorService.findBasicInfo(instructor.getId());
+
+        //then
+        assertAll(
+                () -> assertThat(basicInfo.getName()).isEqualTo(instructor.getName()),
+                () -> assertThat(basicInfo.getDescription()).isEqualTo(instructor.getDescription()),
+                () -> assertThat(basicInfo.getEmail()).isEqualTo(instructor.getEmail())
         );
     }
 }

@@ -1,5 +1,6 @@
 package com.example.lms.domain.instructor.service;
 
+import com.example.lms.domain.instructor.dto.InstructorBasicInfoResponseDto;
 import com.example.lms.domain.instructor.dto.InstructorCreateRequestDto;
 import com.example.lms.domain.instructor.dto.InstructorPersonalInfoResponseDto;
 import com.example.lms.domain.instructor.entity.Instructor;
@@ -38,6 +39,16 @@ public class InstructorService {
         return InstructorPersonalInfoResponseDto.builder()
                 .id(instructor.getId())
                 .loginId(instructor.getLoginId())
+                .name(instructor.getName())
+                .description(instructor.getDescription())
+                .email(instructor.getEmail())
+                .build();
+    }
+
+    public InstructorBasicInfoResponseDto findBasicInfo(Long id) {
+        Instructor instructor = instructorRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("강사 정보를 찾지 못했습니다."));
+        return InstructorBasicInfoResponseDto.builder()
                 .name(instructor.getName())
                 .description(instructor.getDescription())
                 .email(instructor.getEmail())
