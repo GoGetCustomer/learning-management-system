@@ -43,4 +43,9 @@ public abstract class User extends BaseTimeEntity {
     public void updatePassword(String password) {
         this.password = password;
     }
+
+    protected void updateUser(String name, String email) {
+        this.name = name;
+        this.email = email;
+    }
 }
