@@ -1,7 +1,12 @@
 package com.example.lms.domain.quiz.service;
 
+import com.example.lms.domain.course.entity.Course;
+import com.example.lms.domain.course.repository.CourseRepository;
+import com.example.lms.domain.instructor.entity.Instructor;
+import com.example.lms.domain.instructor.repository.InstructorRepository;
 import com.example.lms.domain.quiz.dto.QuizRequest;
 import com.example.lms.domain.quiz.dto.QuizResponse;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +14,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
@@ -17,18 +23,48 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @ActiveProfiles("local")
+@Transactional
 public class QuizServiceTest {
 
     @Autowired
     private QuizService quizService;
+    @Autowired
+    private InstructorRepository instructorRepository;
 
-    @Test
+    @Autowired
+    private CourseRepository courseRepository;
+
+    private Long courseId;
+
+    @BeforeEach
     @Transactional
+    void setUp() {
+        Instructor instructor = Instructor.of(
+                "Instructor1",
+                "password1",
+                "instructor@example.com",
+                "Test instructor",
+                "Test instructor입니다"
+        );
+        instructor = instructorRepository.save(instructor);
+
+        Course course = Course.of(
+                "Test course",
+                "Test course입니다",
+                LocalDate.now(),
+                LocalDate.now().plusDays(7),
+                30,
+                instructor
+        );
+        course = courseRepository.save(course);
+        this.courseId = course.getCourseId();
+    }
+    @Test
     @DisplayName("퀴즈를 생성하고 조회한다.")
     void testCreateAndGetQuiz() {
         QuizRequest quizRequest = new QuizRequest();
         quizRequest.setQuizTitle("퀴즈 생성 및 조회 테스트");
-        quizRequest.setCourseId(1L);
+        quizRequest.setCourseId(courseId);
         quizRequest.setQuizDueDate(LocalDateTime.now().plusDays(7));
 
         QuizRequest.QuestionRequest question1 = new QuizRequest.QuestionRequest();
@@ -60,12 +96,11 @@ public class QuizServiceTest {
 
 
     @Test
-    @Transactional
     @DisplayName("특정 과정에 속한 퀴즈 목록을 조회한다.")
     void testGetQuizzesByCourseId() {
         QuizRequest quizRequest1 = new QuizRequest();
         quizRequest1.setQuizTitle("과정 1 퀴즈 1");
-        quizRequest1.setCourseId(1L);
+        quizRequest1.setCourseId(courseId);
         quizRequest1.setQuizDueDate(LocalDateTime.now().plusDays(7));
 
         QuizRequest.QuestionRequest question1 = new QuizRequest.QuestionRequest();
@@ -78,7 +113,7 @@ public class QuizServiceTest {
 
         QuizRequest quizRequest2 = new QuizRequest();
         quizRequest2.setQuizTitle("과정 1 퀴즈 2");
-        quizRequest2.setCourseId(1L);
+        quizRequest2.setCourseId(courseId);
         quizRequest2.setQuizDueDate(LocalDateTime.now().plusDays(7));
 
         QuizRequest.QuestionRequest question2 = new QuizRequest.QuestionRequest();
@@ -104,12 +139,11 @@ public class QuizServiceTest {
 
 
     @Test
-    @Transactional
     @DisplayName("퀴즈를 수정한다.")
     void testUpdateQuiz() {
         QuizRequest quizRequest = new QuizRequest();
         quizRequest.setQuizTitle("기존 퀴즈 제목");
-        quizRequest.setCourseId(1L);
+        quizRequest.setCourseId(courseId);
         quizRequest.setQuizDueDate(LocalDateTime.now().plusDays(7));
 
         QuizRequest.QuestionRequest question1 = new QuizRequest.QuestionRequest();
@@ -139,12 +173,11 @@ public class QuizServiceTest {
     }
 
     @Test
-    @Transactional
     @DisplayName("퀴즈를 삭제한다.")
     void testDeleteQuiz() {
         QuizRequest quizRequest = new QuizRequest();
         quizRequest.setQuizTitle("삭제할 퀴즈");
-        quizRequest.setCourseId(1L);
+        quizRequest.setCourseId(courseId);
         quizRequest.setQuizDueDate(LocalDateTime.now().plusDays(7));
 
         QuizRequest.QuestionRequest question1 = new QuizRequest.QuestionRequest();

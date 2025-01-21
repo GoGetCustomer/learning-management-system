@@ -1,6 +1,10 @@
 package com.example.lms.domain.quizGrade.service;
 
 import com.example.lms.domain.answer.repository.AnswerRepository;
+import com.example.lms.domain.course.entity.Course;
+import com.example.lms.domain.course.repository.CourseRepository;
+import com.example.lms.domain.instructor.entity.Instructor;
+import com.example.lms.domain.instructor.repository.InstructorRepository;
 import com.example.lms.domain.question.entity.Question;
 import com.example.lms.domain.question.repository.QuestionRepository;
 import com.example.lms.domain.quiz.dto.QuizSubmissionRequest;
@@ -18,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -48,13 +53,38 @@ public class QuizSubmissionAndGradeTest {
     @Autowired
     private AnswerRepository answerRepository;
 
+    @Autowired
+    private CourseRepository courseRepository;
+
+    @Autowired
+    private InstructorRepository instructorRepository;
+
     @Test
     @DisplayName("여러 문제의 정답과 오답을 제출하여 점수를 계산한다.")
     public void testQuizWithCorrectAnswer() {
         Student student = Student.of("Student1", "password1", "test1@example.com", "Student1");
         student = studentRepository.save(student);
 
-        Quiz quiz = Quiz.createQuiz(1L, "테스트 퀴즈 1", LocalDateTime.now().plusDays(1));
+        Instructor instructor = Instructor.of(
+                "Instructor1",
+                "password1",
+                "instructor@example.com",
+                "Test Instructor",
+                "Test Instructor입니다"
+        );
+        instructor = instructorRepository.save(instructor);
+
+        Course course = Course.of(
+                "테스트 과정",
+                "테스트 과정 설명",
+                LocalDate.of(2025, 1, 10),
+                LocalDate.of(2025, 1, 25),
+                30,
+                instructor
+        );
+        course = courseRepository.save(course);
+
+        Quiz quiz = Quiz.createQuiz(course, "테스트 퀴즈 1", LocalDateTime.now().plusDays(1));
         quiz = quizRepository.save(quiz);
 
         Question question1 = Question.createQuestion(quiz, "1 + 1은?", "2", 10);
@@ -66,11 +96,11 @@ public class QuizSubmissionAndGradeTest {
         QuizSubmissionRequest request = new QuizSubmissionRequest();
         request.setStudentId(student.getId());
         Map<Long, String> answers = new HashMap<>();
-        answers.put(question1.getQuestionId(), "2");
-        answers.put(question2.getQuestionId(), "5");
+        answers.put(question1.getId(), "2");
+        answers.put(question2.getId(), "5");
         request.setAnswers(answers);
 
-        QuizSubmissionResponse response = quizSubmissionService.submitQuiz(quiz.getQuizId(), request);
+        QuizSubmissionResponse response = quizSubmissionService.submitQuiz(quiz.getId(), request);
 
         assertNotNull(response);
         assertEquals("success", response.getStatus());
@@ -79,11 +109,11 @@ public class QuizSubmissionAndGradeTest {
         int totalPoints = question1.getPoint() + question2.getPoint();
         int correctPoints = 0;
 
-        if (question1.getCorrect().equals(answers.get(question1.getQuestionId()))) {
+        if (question1.getCorrect().equals(answers.get(question1.getId()))) {
             correctPoints += question1.getPoint();
         }
 
-        if (question2.getCorrect().equals(answers.get(question2.getQuestionId()))) {
+        if (question2.getCorrect().equals(answers.get(question2.getId()))) {
             correctPoints += question2.getPoint();
         }
 

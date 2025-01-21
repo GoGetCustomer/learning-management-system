@@ -9,5 +9,9 @@ ENV DB_PORT=3306
 ENV DB_NAME=db_name_placeholder
 ENV DB_USERNAME=db_user_placeholder
 ENV DB_PASSWORD=db_password_placeholder
+ENV ACCESS_SECRET_KEY=placeholder
+ENV REFRESH_SECRET_KEY=placeholder
+ENV ACCESS_VALIDITY_SECONDS=600
+ENV REFRESH_VALIDITY_SECONDS=86400
 
 ENTRYPOINT ["java", "-jar", "app.jar"]

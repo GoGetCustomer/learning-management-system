@@ -62,8 +62,8 @@ public class SecurityConfig {
 				.addFilterAfter(new JwtAuthenticationFilter(tokenProvider), CustomUsernamePasswordAuthenticationFilter.class)
 				.addFilterBefore(new CustomLogoutFilter(tokenProvider, objectMapper), LogoutFilter.class)
 				.exceptionHandling((exceptionHandling) -> exceptionHandling
-								.authenticationEntryPoint(new CustomAuthenticationEntryPoint(objectMapper))
-								.accessDeniedHandler(new CustomAccessDeniedHandler(objectMapper)));
+						.authenticationEntryPoint(new CustomAuthenticationEntryPoint(objectMapper))
+						.accessDeniedHandler(new CustomAccessDeniedHandler(objectMapper)));
 		return http.build();
 	}
 
@@ -98,8 +98,8 @@ public class SecurityConfig {
 	}
 
 	private static final String[] SWAGGER_PATTERNS = {
-		"/swagger-ui/**",
-		"/actuator/**",
-		"/v3/api-docs/**",
+			"/swagger-ui/**",
+			"/actuator/**",
+			"/v3/api-docs/**",
 	};
 }
