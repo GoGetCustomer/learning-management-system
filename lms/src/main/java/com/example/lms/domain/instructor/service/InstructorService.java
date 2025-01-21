@@ -74,13 +74,13 @@ public class InstructorService {
         }
     }
 
-    private void checkLoginIdDuplicate(String loginId) {
+    public void checkLoginIdDuplicate(String loginId) {
         if (instructorRepository.existsByLoginId(loginId)) {
             throw new IllegalArgumentException("아이디 중복");
         }
     }
 
-    private void checkEmailDuplicate(String email) {
+    public void checkEmailDuplicate(String email) {
         if (instructorRepository.existsByEmail(email)) {
             throw new IllegalArgumentException("이메일 중복");
         }

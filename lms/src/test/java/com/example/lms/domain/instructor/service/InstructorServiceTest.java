@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 @SpringBootTest
@@ -119,5 +120,29 @@ class InstructorServiceTest {
                 () -> assertThat(updateInstructor.getEmail()).isEqualTo(updateEmail),
                 () -> assertThat(updateInstructor.getDescription()).isEqualTo(updateDescription)
         );
+    }
+
+    @Test
+    @DisplayName("아이디가 중복되면 에러를 반환한다.")
+    void instructorCheckLoginIdTest() {
+        //given
+        Instructor instructor = instructorRepository.save(InstructorFixture.INSTRUCTOR_FIXTURE_1.createInstructor());
+        String loginId = instructor.getLoginId();
+
+        //when & then
+        assertThatThrownBy(() -> instructorService.checkLoginIdDuplicate(loginId))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    @DisplayName("이메일이 중복되면 에러를 반환한다.")
+    void instructorCheckEmailTest() {
+        //given
+        Instructor instructor = instructorRepository.save(InstructorFixture.INSTRUCTOR_FIXTURE_1.createInstructor());
+        String email = instructor.getEmail();
+
+        //when & then
+        assertThatThrownBy(() -> instructorService.checkEmailDuplicate(email))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 }

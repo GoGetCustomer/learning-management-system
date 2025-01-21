@@ -45,4 +45,16 @@ public class InstructorController implements InstructorControllerDocs{
     public ResponseEntity<Long> updateInstructor(@Validated(ValidationSequence.class) @RequestBody InstructorUpdateRequestDto instructorUpdateRequestDto) {
         return ResponseEntity.status(CREATED).body(instructorService.update(instructorUpdateRequestDto));
     }
+
+    @GetMapping("/check-login-id/{loginId}")
+    public ResponseEntity<Boolean> checkLoginId(@PathVariable("loginId") String loginId) {
+        instructorService.checkLoginIdDuplicate(loginId);
+        return ResponseEntity.status(OK).body(true);
+    }
+
+    @GetMapping("/check-email/{email}")
+    public ResponseEntity<Boolean> checkEmail(@PathVariable("email") String email) {
+        instructorService.checkEmailDuplicate(email);
+        return ResponseEntity.status(OK).body(true);
+    }
 }
