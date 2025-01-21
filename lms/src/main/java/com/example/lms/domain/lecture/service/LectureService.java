@@ -24,7 +24,9 @@ import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalTime;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -141,5 +143,28 @@ public class LectureService {
         s3Operations.deleteObject(bucket, fileName);
 
         log.info("S3에서 파일 삭제 완료: {} \n", fileName);
+    }
+
+    @Transactional(readOnly = true)
+    public LectureCreateResponseDto getLectureById(Long courseId, Long lectureId) {
+        Course course = courseRepository.findById(courseId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 과정이 존재하지 않습니다."));
+
+        Lecture lecture = lectureRepository.findById(lectureId)
+                .filter(l -> l.getCourse().equals(course))
+                .orElseThrow(() -> new IllegalArgumentException("해당 강의를 찾을 수 없습니다."));
+
+        return lectureMapper.toResponse(lecture);
+    }
+
+    @Transactional(readOnly = true)
+    public List<LectureCreateResponseDto> getAllLectures(Long courseId) {
+        Course course = courseRepository.findById(courseId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 과정이 존재하지 않습니다."));
+
+        List<Lecture> lectures = lectureRepository.findAllByCourse(course);
+        return lectures.stream()
+                .map(lectureMapper::toResponse)
+                .collect(Collectors.toList());
     }
 }

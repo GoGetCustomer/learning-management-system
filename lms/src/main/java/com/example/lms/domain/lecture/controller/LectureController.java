@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/course/{courseId}/lecture")
@@ -74,5 +75,25 @@ public class LectureController {
         } catch (Exception e) {
             return ResponseEntity.status(500).body("An error occurred while deleting the lecture.");
         }
+    }
+
+    @Operation(summary = "강의 조회", description = "특정 과정의 강의를 조회합니다.")
+    @GetMapping("/{lectureId}")
+    public ResponseEntity<LectureCreateResponseDto> getLecture(
+            @Parameter(description = "조회하려는 과정 ID", required = true)
+            @PathVariable Long courseId,
+            @Parameter(description = "조회하려는 강의 ID", required = true)
+            @PathVariable Long lectureId) {
+        LectureCreateResponseDto responseDto = lectureService.getLectureById(courseId, lectureId);
+        return ResponseEntity.ok(responseDto);
+    }
+
+    @Operation(summary = "강의 목록 조회", description = "특정 과정의 모든 강의를 조회합니다.")
+    @GetMapping
+    public ResponseEntity<List<LectureCreateResponseDto>> getAllLectures(
+            @Parameter(description = "조회하려는 과정 ID", required = true)
+            @PathVariable Long courseId) {
+        List<LectureCreateResponseDto> responseList = lectureService.getAllLectures(courseId);
+        return ResponseEntity.ok(responseList);
     }
 }
