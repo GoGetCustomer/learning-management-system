@@ -3,6 +3,7 @@ package com.example.lms.domain.instructor.controller;
 import com.example.lms.common.auth.dto.LoginRequestDto;
 import com.example.lms.common.validation.ValidationSequence;
 import com.example.lms.domain.instructor.dto.InstructorCreateRequestDto;
+import com.example.lms.domain.instructor.dto.InstructorPersonalInfoResponseDto;
 import com.example.lms.domain.instructor.service.InstructorService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -26,5 +27,10 @@ public class InstructorController implements InstructorControllerDocs{
     @PostMapping("/signup")
     public ResponseEntity<Long> join(@Validated(ValidationSequence.class) @RequestBody InstructorCreateRequestDto instructorCreateRequestDto) {
         return ResponseEntity.status(CREATED).body(instructorService.join(instructorCreateRequestDto));
+    }
+
+    @GetMapping
+    public ResponseEntity<InstructorPersonalInfoResponseDto> getPersonalInfo() {
+        return ResponseEntity.status(OK).body(instructorService.findPersonalInfo());
     }
 }

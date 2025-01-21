@@ -1,9 +1,11 @@
 package com.example.lms.domain.instructor.service;
 
 import com.example.lms.domain.instructor.dto.InstructorCreateRequestDto;
+import com.example.lms.domain.instructor.dto.InstructorPersonalInfoResponseDto;
 import com.example.lms.domain.instructor.entity.Instructor;
 import com.example.lms.domain.instructor.repository.InstructorRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,6 +30,18 @@ public class InstructorService {
                 instructorCreateRequestDto.getEmail(),
                 instructorCreateRequestDto.getName(),
                 instructorCreateRequestDto.getDescription())).getId();
+    }
+
+    public InstructorPersonalInfoResponseDto findPersonalInfo() {
+        Instructor instructor = instructorRepository.findById(Long.valueOf(SecurityContextHolder.getContext().getAuthentication().getName()))
+                .orElseThrow(() -> new IllegalArgumentException("강사 정보를 찾지 못했습니다."));
+        return InstructorPersonalInfoResponseDto.builder()
+                .id(instructor.getId())
+                .loginId(instructor.getLoginId())
+                .name(instructor.getName())
+                .description(instructor.getDescription())
+                .email(instructor.getEmail())
+                .build();
     }
 
     private void checkPassword(String password, String passwordCheck) {

@@ -54,7 +54,7 @@ public class SecurityConfig {
 						.requestMatchers(HttpMethod.DELETE, "/api/course/**").hasAuthority(Role.INSTRUCTOR.getAuthority())
 						.requestMatchers(HttpMethod.GET, "/api/course/**").permitAll()
 						.requestMatchers("/api/students/**").hasAuthority(Role.STUDENT.getAuthority())
-						.requestMatchers("/api/instructors/**").hasAuthority(Role.INSTRUCTOR.getAuthority())
+						.requestMatchers("/api/instructors", "/api/instructors/**").hasAuthority(Role.INSTRUCTOR.getAuthority())
 						.anyRequest().authenticated()
 				)
 				.addFilterAt(new StudentLoginFilter(studentAuthenticationManager, tokenProvider, objectMapper), UsernamePasswordAuthenticationFilter.class)
