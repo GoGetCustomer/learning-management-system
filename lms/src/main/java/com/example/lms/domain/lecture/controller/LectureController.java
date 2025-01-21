@@ -5,6 +5,7 @@ import com.example.lms.domain.lecture.dto.response.LectureCreateResponseDto;
 import com.example.lms.domain.lecture.entity.Lecture;
 import com.example.lms.domain.lecture.service.LectureService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -52,6 +53,26 @@ public class LectureController {
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(null);
+        }
+    }
+
+    @DeleteMapping("/{lectureId}")
+    @Operation(
+                summary = "강의 삭제",
+            description = "업로드된 강의를 삭제합니다."
+    )
+    public ResponseEntity<String> deleteLecture(
+            @Parameter(description = "삭제하려는 강의 ID", required = true)
+            @PathVariable Long lectureId,
+            @Parameter(description = "강의가 존재하는 과정 ID", required = true)
+            @PathVariable Long courseId) {
+        try {
+            lectureService.deleteLecture(lectureId, courseId);
+                return ResponseEntity.ok("강의가 삭제되었습니다.");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("An error occurred while deleting the lecture.");
         }
     }
 }

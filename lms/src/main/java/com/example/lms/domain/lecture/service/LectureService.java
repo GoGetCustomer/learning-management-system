@@ -19,6 +19,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -99,5 +100,46 @@ public class LectureService {
 
     private String generateS3FileUrl(String fileName) {
         return String.format("https://%s.s3.%s.amazonaws.com/%s", bucket, region, fileName);
+    }
+
+    @Transactional
+    public void deleteLecture(Long lectureId, Long courseId) {
+
+        // 현재 인증된 사용자 ID 가져오기
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Long id = Long.valueOf(authentication.getName());
+
+        // 강사 검증
+        Instructor instructor = instructorRepository.findByIdAndNotDeleted(id)
+                .orElseThrow(() -> new IllegalArgumentException("로그인된 사용자가 강사가 아닙니다."));
+        // 과정 조회
+        Course course = courseRepository.findById(courseId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 과정이 존재하지 않습니다."));
+
+        if (!course.belongsToInstructor(instructor)) {
+            throw new IllegalArgumentException("해당 과정에 강의를 추가할 수 없습니다.");
+        }
+
+        // 강의 조회
+        Lecture lecture = lectureRepository.findById(lectureId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 강의가 존재하지 않습니다."));
+
+        // 강의 파일 S3에서 삭제
+        deleteFromS3(lecture.getLectureUrl());
+
+        // 데이터베이스에서 강의 삭제
+        lectureRepository.delete(lecture);
+
+        log.info("강의 삭제 완료: {} \n", lectureId);
+    }
+
+    private void deleteFromS3(String lectureUrl) {
+        // URL에서 파일 이름 추출
+        String fileName = lectureUrl.substring(lectureUrl.lastIndexOf("/") + 1);
+
+        // S3에서 파일 삭제 요청
+        s3Operations.deleteObject(bucket, fileName);
+
+        log.info("S3에서 파일 삭제 완료: {} \n", fileName);
     }
 }
