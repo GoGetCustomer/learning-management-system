@@ -1,5 +1,6 @@
 package com.example.lms.domain.course.dto.response;
 
+import com.example.lms.domain.instructor.dto.InstructorInfo;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,11 +13,12 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CourseResponseDto {
-    private Long courseId;
+    private Long id;
     private String courseTitle;
     private String courseDescription;
-    private String instructorName;
+    private InstructorInfo instructorInfo;
     private Integer courseStudents;
+    private Integer courseCapacity;
     private LocalDate startDate;
     private LocalDate endDate;
 }
