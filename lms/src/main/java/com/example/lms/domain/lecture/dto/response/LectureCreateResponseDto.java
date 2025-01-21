@@ -12,7 +12,7 @@ import java.time.LocalTime;
 public class LectureCreateResponseDto {
     private String lectureTitle;
     private String lectureDescription;
-    private String lectureUrl; // https://{bucket}.s3.amazonaws.com/{key}
+    private String lectureUrl;
     private Long courseId;
-    private LocalTime lectureTime;
+    private LocalTime lectureTime; // 임의 설정 예정.
 }
