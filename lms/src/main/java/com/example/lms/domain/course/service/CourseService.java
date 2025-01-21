@@ -65,10 +65,7 @@ public class CourseService {
 
         courseMapper.updateEntityFromDto(requestDto, course);
 
-        // 업데이트된 강좌 저장
-        Course savedCourse = courseRepository.save(course);
-
-        return courseMapper.toUpdateResponseDto(savedCourse);
+        return courseMapper.toUpdateResponseDto(course);
     }
 
     @Transactional
@@ -114,7 +111,7 @@ public class CourseService {
         if (instructorId == null) {
             courses = courseRepository.findAll();
         } else {
-            Instructor instructor = instructorRepository.findById(instructorId)
+            instructorRepository.findById(instructorId)
                     .orElseThrow(() -> new IllegalArgumentException("Instructor not found with ID: " + instructorId));
 
             courses = courseRepository.findAllByInstructorId(instructorId);
