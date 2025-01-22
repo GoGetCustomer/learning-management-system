@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -25,16 +26,14 @@ import java.util.List;
 public class LectureController {
     private final LectureService lectureService;
 
-    @PostMapping(consumes = {"application/octet-stream", "multipart/form-data"})
+    @PostMapping(consumes = {"multipart/form-data"})
     @Operation(summary = "과정 내 강의 생성", description = "새로운 강의를 업로드합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "강의 업로드 성공",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = Lecture.class))),
-            @ApiResponse(responseCode = "400", description = "Invalid input",
-                    content = @Content),
-            @ApiResponse(responseCode = "500", description = "Internal server error",
-                    content = @Content)
+            @ApiResponse(responseCode = "400", description = "Invalid input"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     public ResponseEntity<LectureCreateResponseDto> createLecture(
             @PathVariable Long courseId,
@@ -42,7 +41,8 @@ public class LectureController {
             @RequestPart("file") MultipartFile file) throws IOException {
             // 강의 생성
             LectureCreateResponseDto response = lectureService.createLecture(request, courseId, file);
-            return ResponseEntity.ok(response);
+            URI location = URI.create(String.format("/api/course/%d/lecture/%d", courseId, response.getId()));
+            return ResponseEntity.created(location).body(response);
     }
 
     @DeleteMapping("/{lectureId}")
