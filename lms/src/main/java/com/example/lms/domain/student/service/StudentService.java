@@ -36,13 +36,13 @@ public class StudentService {
         }
     }
 
-    private void checkLoginIdDuplicate(String loginId) {
+    public void checkLoginIdDuplicate(String loginId) {
         if (studentRepository.existsByLoginId(loginId)) {
             throw new IllegalArgumentException("아이디 중복");
         }
     }
 
-    private void checkEmailDuplicate(String email) {
+    public void checkEmailDuplicate(String email) {
         if (studentRepository.existsByEmail(email)) {
             throw new IllegalArgumentException("이메일 중복");
         }

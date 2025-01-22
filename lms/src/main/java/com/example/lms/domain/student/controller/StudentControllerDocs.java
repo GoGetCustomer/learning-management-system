@@ -27,4 +27,18 @@ public interface StudentControllerDocs {
             @ApiResponse(responseCode = "409", description = "아이디/이메일 중복")
     })
     public ResponseEntity<Long> join (StudentCreateRequestDto studentCreateRequestDto);
+
+    @Operation(summary = "학생 아이디 중복 확인 요청", description = "**성공 응답 데이터:** true ")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "사용 가능한 아이디"),
+            @ApiResponse(responseCode = "409", description = "아이디 중복"),
+    })
+    public ResponseEntity<Boolean> checkLoginId(String loginId);
+
+    @Operation(summary = "학생 이메일 중복 확인 요청", description = "**성공 응답 데이터:** true ")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "사용 가능한 이메일"),
+            @ApiResponse(responseCode = "409", description = "이메일 중복"),
+    })
+    public ResponseEntity<Boolean> checkEmail(String email);
 }
