@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/course/{courseId}/content")
@@ -55,6 +56,26 @@ public class ContentController {
             @PathVariable Long courseId) {
         contentService.deleteContent(courseId, contentId);
         return ResponseEntity.ok("강의자료가 삭제되었습니다.");
+    }
+
+    @Operation(summary = "강의자료 조회", description = "특정 과정의 강의자료를 조회합니다.")
+    @GetMapping("/{contentId}")
+    public ResponseEntity<ContentResponseDto> getContentByContentId(
+            @Parameter(description = "조회하려는 과정 ID", required = true)
+            @PathVariable Long courseId,
+            @Parameter(description = "조회하려는 강의  자료 ID", required = true)
+            @PathVariable Long contentId) {
+        ContentResponseDto response = contentService.getContent(courseId, contentId);
+        return ResponseEntity.ok(response);
+    }
+
+    @Operation(summary = "강의자료 목록 조회", description = "특정 과정의 모든 강의자료를 조회합니다.")
+    @GetMapping
+    public ResponseEntity<List<ContentResponseDto>> getAllContents(
+            @Parameter(description = "조회하려는 과정 ID", required = true)
+            @PathVariable Long courseId) {
+        List<ContentResponseDto> responseList = contentService.getAllContents(courseId);
+        return ResponseEntity.ok(responseList);
     }
 
 }

@@ -15,6 +15,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -44,7 +46,7 @@ public class ContentService {
     @Transactional
     public void deleteContent(Long courseId, Long contentId) {
         Instructor instructor = courseValidationService.validateInstructor();
-        Course course = courseValidationService.validateCourseInstructor(courseId, instructor);
+        courseValidationService.validateCourseInstructor(courseId, instructor);
         Content content = contentRepository.findById(contentId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 강의자료가 존재하지 않습니다."));
 
@@ -52,4 +54,26 @@ public class ContentService {
         fileService.deleteFromS3(content.getFileUrl());
     }
 
+    @Transactional
+    public ContentResponseDto getContent(Long courseId, Long contentId) {
+        Instructor instructor = courseValidationService.validateInstructor();
+        Course course = courseValidationService.validateCourseInstructor(courseId, instructor);
+
+        Content content = contentRepository.findById(contentId)
+                .filter(l -> l.getCourse().equals(course))
+                .orElseThrow(() -> new IllegalArgumentException("해당 강의자료를 찾을 수 없습니다."));
+
+        return contentMapper.toResponse(content);
+    }
+
+    @Transactional
+    public List<ContentResponseDto> getAllContents(Long courseId) {
+        Instructor instructor = courseValidationService.validateInstructor();
+        Course course = courseValidationService.validateCourseInstructor(courseId, instructor);
+
+        List<Content> contents = contentRepository.findAllByCourse(course);
+        return contents.stream()
+                .map(contentMapper::toResponse)
+                .collect(Collectors.toList());
+    }
 }
