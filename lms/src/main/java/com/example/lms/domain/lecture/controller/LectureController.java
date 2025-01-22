@@ -12,12 +12,12 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -26,35 +26,23 @@ import java.util.List;
 public class LectureController {
     private final LectureService lectureService;
 
-    @PostMapping(consumes = {"application/octet-stream", "multipart/form-data"})
+    @PostMapping(consumes = {"multipart/form-data"})
     @Operation(summary = "과정 내 강의 생성", description = "새로운 강의를 업로드합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "강의 업로드 성공",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = Lecture.class))),
-            @ApiResponse(responseCode = "400", description = "Invalid input",
-                    content = @Content),
-            @ApiResponse(responseCode = "500", description = "Internal server error",
-                    content = @Content)
+            @ApiResponse(responseCode = "400", description = "Invalid input"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     public ResponseEntity<LectureCreateResponseDto> createLecture(
             @PathVariable Long courseId,
             @RequestPart("data") LectureCreateRequestDto request,
-            @RequestPart("file") MultipartFile file) {
-
-        try {
+            @RequestPart("file") MultipartFile file) throws IOException {
             // 강의 생성
             LectureCreateResponseDto response = lectureService.createLecture(request, courseId, file);
-
-            return ResponseEntity.ok(response);
-
-        } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(null);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(null);
-        }
+            URI location = URI.create(String.format("/api/course/%d/lecture/%d", courseId, response.getId()));
+            return ResponseEntity.created(location).body(response);
     }
 
     @DeleteMapping("/{lectureId}")
@@ -67,14 +55,8 @@ public class LectureController {
             @PathVariable Long lectureId,
             @Parameter(description = "강의가 존재하는 과정 ID", required = true)
             @PathVariable Long courseId) {
-        try {
             lectureService.deleteLecture(lectureId, courseId);
                 return ResponseEntity.ok("강의가 삭제되었습니다.");
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.status(500).body("An error occurred while deleting the lecture.");
-        }
     }
 
     @Operation(summary = "강의 조회", description = "특정 과정의 강의를 조회합니다.")

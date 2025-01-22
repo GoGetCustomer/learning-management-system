@@ -10,6 +10,7 @@ import java.time.LocalTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class LectureCreateResponseDto {
+    private Long id;
     private String lectureTitle;
     private String lectureDescription;
     private String lectureUrl;
