@@ -12,7 +12,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -40,21 +39,10 @@ public class LectureController {
     public ResponseEntity<LectureCreateResponseDto> createLecture(
             @PathVariable Long courseId,
             @RequestPart("data") LectureCreateRequestDto request,
-            @RequestPart("file") MultipartFile file) {
-
-        try {
+            @RequestPart("file") MultipartFile file) throws IOException {
             // 강의 생성
             LectureCreateResponseDto response = lectureService.createLecture(request, courseId, file);
-
             return ResponseEntity.ok(response);
-
-        } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(null);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(null);
-        }
     }
 
     @DeleteMapping("/{lectureId}")
@@ -67,14 +55,8 @@ public class LectureController {
             @PathVariable Long lectureId,
             @Parameter(description = "강의가 존재하는 과정 ID", required = true)
             @PathVariable Long courseId) {
-        try {
             lectureService.deleteLecture(lectureId, courseId);
                 return ResponseEntity.ok("강의가 삭제되었습니다.");
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.status(500).body("An error occurred while deleting the lecture.");
-        }
     }
 
     @Operation(summary = "강의 조회", description = "특정 과정의 강의를 조회합니다.")
