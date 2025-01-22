@@ -10,6 +10,7 @@ import java.time.LocalTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ContentResponseDto {
+    private Long id;
     private String fileName;
     private String fileType;
     private String fileUrl;
