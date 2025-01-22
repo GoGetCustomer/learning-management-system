@@ -1,5 +1,6 @@
 package com.example.lms.domain.course.service;
 
+import com.example.lms.common.service.CourseValidationService;
 import com.example.lms.domain.course.dto.request.CourseCreateRequestDto;
 import com.example.lms.domain.course.dto.request.CourseUpdateRequestDto;
 import com.example.lms.domain.course.dto.response.CourseCreateResponseDto;
@@ -29,14 +30,14 @@ public class CourseService {
     private final CourseRepository courseRepository;
     private final InstructorRepository instructorRepository;
     private final CourseMapper courseMapper;
+    private final CourseValidationService courseValidationService;
 
     @Transactional
     public CourseCreateResponseDto createCourse(CourseCreateRequestDto requestDto) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Long id = Long.valueOf(authentication.getName());
 
-        Instructor instructor = instructorRepository.findByIdAndNotDeleted(id)
-                .orElseThrow(() -> new IllegalArgumentException("로그인된 사용자가 강사가 아닙니다."));
+        Instructor instructor = courseValidationService.validateInstructor();
 
         Course course = courseMapper.toEntity(requestDto);
 
@@ -52,16 +53,9 @@ public class CourseService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Long id = Long.valueOf(authentication.getName());
 
-        Instructor instructor = instructorRepository.findByIdAndNotDeleted(id)
-                .orElseThrow(() -> new IllegalArgumentException("로그인된 사용자가 강사가 아닙니다."));
+        Instructor instructor = courseValidationService.validateInstructor();
 
-        Course course = courseRepository.findById(courseId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 강좌가 존재하지 않습니다."));
-
-        // 강좌의 소유권 확인
-        if (!course.belongsToInstructor(instructor)) {
-            throw new IllegalArgumentException("해당 강좌를 수정할 권한이 없습니다.");
-        }
+        Course course = courseValidationService.validateCourseInstructor(courseId, instructor);
 
         courseMapper.updateEntityFromDto(requestDto, course);
 
@@ -73,15 +67,9 @@ public class CourseService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Long id = Long.valueOf(authentication.getName());
 
-        Instructor instructor = instructorRepository.findByIdAndNotDeleted(id)
-                .orElseThrow(() -> new IllegalArgumentException("로그인된 사용자가 강사가 아닙니다."));
+        Instructor instructor = courseValidationService.validateInstructor();
 
-        Course course = courseRepository.findById(courseId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 강좌가 존재하지 않습니다."));
-
-        if (!course.belongsToInstructor(instructor)) {
-            throw new IllegalArgumentException("해당 강좌를 삭제할 권한이 없습니다.");
-        }
+        Course course = courseValidationService.validateCourseInstructor(courseId, instructor);
         course.getTeachings().clear();
         courseRepository.delete(course);
     }

@@ -26,18 +26,16 @@ public class CourseValidationService {
 
     public Course validateCourseInstructor(Long courseId, Instructor instructor) {
         Course course = courseRepository.findById(courseId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 강좌가 존재하지 않습니다."));
+                .orElseThrow(() -> new IllegalArgumentException("해당 과정은 존재하지 않습니다."));
 
         if (!course.belongsToInstructor(instructor)) {
-            throw new IllegalArgumentException("해당 강좌에 강의 또는 강의 자료를 추가할 수 없습니다.");
+            throw new IllegalArgumentException("해당 과정과 과정에 속하는 강의 또는 강의 자료를 추가할 수 없습니다.");
         }
 
         return course;
     }
     public Course validateCourse(Long courseId) {
-        Course course = courseRepository.findById(courseId)
+        return courseRepository.findById(courseId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 강좌가 존재하지 않습니다."));
-
-        return course;
     }
 }
