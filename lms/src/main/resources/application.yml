@@ -22,6 +22,19 @@ spring:
     defer-datasource-initialization: true
     show-sql: true
     open-in-view: false
+  servlet:
+    multipart:
+      max-file-size: 1GB
+      max-request-size: 1GB
+cloud:
+  aws:
+    credentials:
+      access-key: ${AWS_ACCESS_KEY_ID}
+      secret-key: ${AWS_SECRET_ACCESS_KEY}
+    region:
+      static: ${AWS_REGION}
+    s3:
+      bucket: ${AWS_S3_BUCKET}
 
 server:
   host: ${DEV_URL:http://localhost:8080}
