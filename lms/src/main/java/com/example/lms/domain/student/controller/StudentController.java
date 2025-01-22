@@ -3,6 +3,7 @@ package com.example.lms.domain.student.controller;
 import com.example.lms.common.auth.dto.LoginRequestDto;
 import com.example.lms.common.validation.ValidationSequence;
 import com.example.lms.domain.student.dto.StudentCreateRequestDto;
+import com.example.lms.domain.student.dto.StudentPersonalInfoResponseDto;
 import com.example.lms.domain.student.service.StudentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -37,5 +38,10 @@ public class StudentController implements StudentControllerDocs{
     public ResponseEntity<Boolean> checkEmail(@PathVariable("email") String email) {
         studentService.checkEmailDuplicate(email);
         return ResponseEntity.status(OK).body(true);
+    }
+
+    @GetMapping
+    public ResponseEntity<StudentPersonalInfoResponseDto> getPersonalInfo() {
+        return ResponseEntity.status(OK).body(studentService.findPersonalInfo());
     }
 }

@@ -2,6 +2,7 @@ package com.example.lms.domain.student.controller;
 
 import com.example.lms.common.auth.dto.LoginRequestDto;
 import com.example.lms.domain.student.dto.StudentCreateRequestDto;
+import com.example.lms.domain.student.dto.StudentPersonalInfoResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -41,4 +42,11 @@ public interface StudentControllerDocs {
             @ApiResponse(responseCode = "409", description = "이메일 중복"),
     })
     public ResponseEntity<Boolean> checkEmail(String email);
+
+    @Operation(summary = "회원 개인정보 조회 요청", description = " 회원의 개인 정보를 반환합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "회원 개인정보 조회 완료"),
+            @ApiResponse(responseCode = "403", description = "권한이 없습니다."),
+    })
+    public ResponseEntity<StudentPersonalInfoResponseDto> getPersonalInfo();
 }

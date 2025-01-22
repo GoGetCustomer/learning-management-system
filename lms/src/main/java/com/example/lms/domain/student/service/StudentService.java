@@ -1,9 +1,11 @@
 package com.example.lms.domain.student.service;
 
 import com.example.lms.domain.student.dto.StudentCreateRequestDto;
+import com.example.lms.domain.student.dto.StudentPersonalInfoResponseDto;
 import com.example.lms.domain.student.entity.Student;
 import com.example.lms.domain.student.repository.StudentRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -46,5 +48,16 @@ public class StudentService {
         if (studentRepository.existsByEmail(email)) {
             throw new IllegalArgumentException("이메일 중복");
         }
+    }
+
+    public StudentPersonalInfoResponseDto findPersonalInfo() {
+        Student student = studentRepository.findById(Long.valueOf(SecurityContextHolder.getContext().getAuthentication().getName()))
+                .orElseThrow(() -> new IllegalArgumentException("학생 정보를 찾을 수 없습니다."));
+        return StudentPersonalInfoResponseDto.builder()
+                .id(student.getId())
+                .loginId(student.getLoginId())
+                .name(student.getName())
+                .email(student.getEmail())
+                .build();
     }
 }

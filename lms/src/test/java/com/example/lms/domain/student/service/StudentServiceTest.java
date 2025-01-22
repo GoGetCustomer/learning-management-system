@@ -2,13 +2,20 @@ package com.example.lms.domain.student.service;
 
 import com.example.lms.common.fixture.StudentFixture;
 import com.example.lms.domain.student.dto.StudentCreateRequestDto;
+import com.example.lms.domain.student.dto.StudentPersonalInfoResponseDto;
 import com.example.lms.domain.student.entity.Student;
 import com.example.lms.domain.student.repository.StudentRepository;
+import com.example.lms.domain.user.enums.Role;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -65,5 +72,25 @@ class StudentServiceTest {
         //when & then
         assertThatThrownBy(() -> studentService.checkEmailDuplicate(email))
                 .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    @DisplayName("학생이 개인정보를 조회한다.")
+    void getPersonalInfoTest() {
+        //given
+        Student student = studentRepository.save(StudentFixture.STUDENT_FIXTURE_1.createStudent());
+        SecurityContextHolder.getContext().setAuthentication(
+                new UsernamePasswordAuthenticationToken(student.getId(), null, Collections.singletonList(new SimpleGrantedAuthority(Role.STUDENT.getAuthority()))));
+
+        //when
+        StudentPersonalInfoResponseDto studentPersonalInfoResponseDto = studentService.findPersonalInfo();
+
+        //then
+        assertAll(
+                () -> assertThat(studentPersonalInfoResponseDto.getId()).isEqualTo(student.getId()),
+                () -> assertThat(studentPersonalInfoResponseDto.getLoginId()).isEqualTo(student.getLoginId()),
+                () -> assertThat(studentPersonalInfoResponseDto.getName()).isEqualTo(student.getName()),
+                () -> assertThat(studentPersonalInfoResponseDto.getEmail()).isEqualTo(student.getEmail())
+        );
     }
 }
