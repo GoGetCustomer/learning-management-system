@@ -10,7 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 
-@Tag(name = "Users")
+@Tag(name = "user-controller")
 @Validated
 public interface UserControllerDocs {
 
