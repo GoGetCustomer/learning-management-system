@@ -17,4 +17,7 @@ public interface RegistrationRepository extends JpaRepository<Registration, Long
 
     @Query("select r from Registration r left join fetch r.course left join fetch r.student where r.student.id =:studentId")
     Page<Registration> findPageByStudentIdWithCourse(@Param("studentId") Long studentId, Pageable pageable);
+
+    @Query("select r from Registration r left join fetch r.course left join fetch r.student where r.course.id =:courseId")
+    Page<Registration> findPageByCourseIdWithStudent(@Param("courseId") Long courseId, Pageable pageable);
 }

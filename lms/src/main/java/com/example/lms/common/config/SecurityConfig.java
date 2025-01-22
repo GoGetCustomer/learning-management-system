@@ -63,6 +63,7 @@ public class SecurityConfig {
 								.requestMatchers(HttpMethod.PUT, "/api/registrations/{registrationId}/courses/{courseId}/cancel").authenticated()
 								.requestMatchers(HttpMethod.PUT, "/api/registrations/{registrationId}/courses/{courseId}/approve").hasAuthority(Role.INSTRUCTOR.getAuthority())
 								.requestMatchers(HttpMethod.GET, "/api/registrations/student/history").hasAuthority(Role.STUDENT.getAuthority())
+								.requestMatchers(HttpMethod.GET, "/api/registrations/history/courses/{courseId}").hasAuthority(Role.INSTRUCTOR.getAuthority())
 						.anyRequest().authenticated()
 				)
 				.addFilterAt(new StudentLoginFilter(studentAuthenticationManager, tokenProvider, objectMapper), UsernamePasswordAuthenticationFilter.class)

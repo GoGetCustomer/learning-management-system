@@ -1,5 +1,6 @@
 package com.example.lms.domain.registration.controller;
 
+import com.example.lms.domain.registration.dto.RegistrationCourseResponseDto;
 import com.example.lms.domain.registration.dto.RegistrationStudentResponseDto;
 import com.example.lms.domain.registration.serveice.RegistrationService;
 import lombok.RequiredArgsConstructor;
@@ -33,5 +34,11 @@ public class RegistrationController implements RegistrationControllerDocs{
     @GetMapping("/student/history")
     public ResponseEntity<Page<RegistrationStudentResponseDto>> getRegistrationStudentHistory(@RequestParam(defaultValue = "1") int page) {
         return ResponseEntity.status(HttpStatus.OK).body(registrationService.findStudentRegistrationHistory(page));
+    }
+
+    @GetMapping("/history/courses/{courseId}")
+    public ResponseEntity<Page<RegistrationCourseResponseDto>> getRegistrationCourseHistory(@RequestParam(defaultValue = "1") int page,
+                                                                                             @PathVariable("courseId") Long courseId) {
+        return ResponseEntity.status(HttpStatus.OK).body(registrationService.findCourseRegistrationHistory(page, courseId));
     }
 }

@@ -2,6 +2,7 @@ package com.example.lms.domain.registration.serveice;
 
 import com.example.lms.domain.course.entity.Course;
 import com.example.lms.domain.course.repository.CourseRepository;
+import com.example.lms.domain.registration.dto.RegistrationCourseResponseDto;
 import com.example.lms.domain.registration.dto.RegistrationStudentResponseDto;
 import com.example.lms.domain.registration.entity.Registration;
 import com.example.lms.domain.registration.enums.RegistrationStatus;
@@ -90,6 +91,26 @@ public class RegistrationService {
                 .courseDescription(registration.getCourse().getCourseDescription())
                 .build()
         );
+    }
+
+    public Page<RegistrationCourseResponseDto> findCourseRegistrationHistory(int page, Long courseId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Long instructorId = Long.valueOf(authentication.getName());
+        String role = authentication.getAuthorities().iterator().next().getAuthority();
+        if (!role.equals(Role.INSTRUCTOR.getAuthority()) || !isAuthorizedInstructorForCourse(instructorId, courseId)) {
+            throw new IllegalArgumentException("과정 진행 강사만 수강 신청 리스트를 조회할 수 있습니다.");
+        }
+        Page<Registration> registrationPage = registrationRepository.findPageByCourseIdWithStudent(courseId, PageRequest.of(page - 1, 10));
+        return registrationPage.map(registration -> RegistrationCourseResponseDto.builder()
+                .id(registration.getId())
+                .registrationStatus(registration.getRegistrationStatus().getCode())
+                .createAt(registration.getCreatedAt())
+                .studentId(registration.getStudent().getId())
+                .studentName(registration.getStudent().getName())
+                .studentEmail(registration.getStudent().getEmail())
+                .courseId(registration.getCourse().getId())
+                .courseTitle(registration.getCourse().getCourseTitle())
+                .build());
     }
 
     private boolean isAuthorizedForCourse(String role, Long targetId, Long courseId) {

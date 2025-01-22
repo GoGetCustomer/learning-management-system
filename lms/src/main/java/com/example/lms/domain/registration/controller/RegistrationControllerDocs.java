@@ -1,5 +1,6 @@
 package com.example.lms.domain.registration.controller;
 
+import com.example.lms.domain.registration.dto.RegistrationCourseResponseDto;
 import com.example.lms.domain.registration.dto.RegistrationStudentResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -38,4 +39,11 @@ public interface RegistrationControllerDocs {
             @ApiResponse(responseCode = "403", description = "권한 없습니다.")
     })
     public ResponseEntity<Page<RegistrationStudentResponseDto>> getRegistrationStudentHistory(int page);
+
+    @Operation(summary = "과정에 수강 신청한 학생 내역 조회 요청", description = "성공 응답 registration 페이지")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "과정에 수강 신청한 내역 조회 성공"),
+            @ApiResponse(responseCode = "403", description = "권한 없습니다.")
+    })
+    public ResponseEntity<Page<RegistrationCourseResponseDto>> getRegistrationCourseHistory(int page, Long courseId);
 }

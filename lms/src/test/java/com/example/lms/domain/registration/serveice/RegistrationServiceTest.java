@@ -7,6 +7,7 @@ import com.example.lms.domain.course.entity.Course;
 import com.example.lms.domain.course.repository.CourseRepository;
 import com.example.lms.domain.instructor.entity.Instructor;
 import com.example.lms.domain.instructor.repository.InstructorRepository;
+import com.example.lms.domain.registration.dto.RegistrationCourseResponseDto;
 import com.example.lms.domain.registration.dto.RegistrationStudentResponseDto;
 import com.example.lms.domain.registration.entity.Registration;
 import com.example.lms.domain.registration.enums.RegistrationStatus;
@@ -304,5 +305,46 @@ class RegistrationServiceTest {
                 () -> assertThat(dto2.getCourseId()).isEqualTo(secondCourse.getId()),
                 () -> assertThat(dto2.getCourseTitle()).isEqualTo(secondCourse.getCourseTitle()),
                 () -> assertThat(dto2.getCourseDescription()).isEqualTo(secondCourse.getCourseDescription()));
+    }
+
+    @Test
+    @DisplayName("강사는 자신의 강좌에 수강 신청한 학생들을 조회한다.")
+    void findCourseRegistrationHistoryTest() {
+        //given
+        Instructor instructor = instructorRepository.save(InstructorFixture.INSTRUCTOR_FIXTURE_1.createInstructor());
+        SecurityContextHolder.getContext().setAuthentication(
+                new UsernamePasswordAuthenticationToken(instructor.getId(), null, Collections.singletonList(new SimpleGrantedAuthority(Role.INSTRUCTOR.getAuthority()))));
+        Course course = courseRepository.save(CourseFixture.COURSE_FIXTURE_1.createCourse());
+        teachingRepository.save(Teaching.of(instructor, course));
+
+        Student firstStudent = studentRepository.save(StudentFixture.STUDENT_FIXTURE_1.createStudent());
+        Student secondStudent = studentRepository.save(StudentFixture.STUDENT_FIXTURE_2.createStudent());
+
+        Registration firstRegistration = registrationRepository.save(Registration.of(firstStudent, course));
+        Registration secondRegistration = registrationRepository.save(Registration.of(secondStudent, course));
+
+        //when
+        Page<RegistrationCourseResponseDto> result = registrationService.findCourseRegistrationHistory(1, course.getId());
+
+        //then
+        RegistrationCourseResponseDto dto = result.getContent().get(0);
+        RegistrationCourseResponseDto dto2 = result.getContent().get(1);
+        assertAll(
+                () -> assertThat(dto.getId()).isEqualTo(firstRegistration.getId()),
+                () -> assertThat(dto.getRegistrationStatus()).isEqualTo(firstRegistration.getRegistrationStatus().getCode()),
+                () -> assertThat(dto.getCreateAt()).isEqualTo(firstRegistration.getCreatedAt()),
+                () -> assertThat(dto.getStudentId()).isEqualTo(firstStudent.getId()),
+                () -> assertThat(dto.getStudentName()).isEqualTo(firstStudent.getName()),
+                () -> assertThat(dto.getStudentEmail()).isEqualTo(firstStudent.getEmail()),
+                () -> assertThat(dto.getCourseId()).isEqualTo(course.getId()),
+                () -> assertThat(dto.getCourseTitle()).isEqualTo(course.getCourseTitle()),
+                () -> assertThat(dto2.getId()).isEqualTo(secondRegistration.getId()),
+                () -> assertThat(dto2.getRegistrationStatus()).isEqualTo(secondRegistration.getRegistrationStatus().getCode()),
+                () -> assertThat(dto2.getCreateAt()).isEqualTo(secondRegistration.getCreatedAt()),
+                () -> assertThat(dto2.getStudentId()).isEqualTo(secondStudent.getId()),
+                () -> assertThat(dto2.getStudentName()).isEqualTo(secondStudent.getName()),
+                () -> assertThat(dto2.getStudentEmail()).isEqualTo(secondStudent.getEmail()),
+                () -> assertThat(dto2.getCourseId()).isEqualTo(course.getId()),
+                () -> assertThat(dto2.getCourseTitle()).isEqualTo(course.getCourseTitle()));
     }
 }
