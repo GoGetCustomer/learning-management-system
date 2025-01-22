@@ -13,6 +13,7 @@ import com.example.lms.domain.registration.repository.RegistrationRepository;
 import com.example.lms.domain.student.dto.StudentBasicInfoResponseDto;
 import com.example.lms.domain.student.dto.StudentCreateRequestDto;
 import com.example.lms.domain.student.dto.StudentPersonalInfoResponseDto;
+import com.example.lms.domain.student.dto.StudentUpdateRequestDto;
 import com.example.lms.domain.student.entity.Student;
 import com.example.lms.domain.student.repository.StudentRepository;
 import com.example.lms.domain.teaching.entity.Teaching;
@@ -167,5 +168,30 @@ class StudentServiceTest {
         assertThatThrownBy(() -> studentService.findBasicInfoForInstructor(student.getId(), course.getId()))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("과정 진행 강사만 수강 학생 정보를 조회할 수 있습니다.");
+    }
+
+    @Test
+    @DisplayName("학생 정보를 수정한다.")
+    void updateStudentTest() {
+        //given
+        Student student = studentRepository.save(StudentFixture.STUDENT_FIXTURE_1.createStudent());
+        SecurityContextHolder.getContext().setAuthentication(
+                new UsernamePasswordAuthenticationToken(student.getId(), null, Collections.singletonList(new SimpleGrantedAuthority(Role.STUDENT.getAuthority()))));
+
+        String updateName = "김업뎃";
+        String updateEmail = "update@gmail.com";
+        StudentUpdateRequestDto studentUpdateRequestDto = new StudentUpdateRequestDto(updateName, updateEmail);
+
+        //when
+        Long id = studentService.update(studentUpdateRequestDto);
+
+        //then
+        Student updateStudent = studentRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("학생 정보를 찾을 수 없습니다."));
+        assertAll(
+                () -> assertThat(updateStudent.getId()).isEqualTo(id),
+                () -> assertThat(updateStudent.getName()).isEqualTo(updateName),
+                () -> assertThat(updateStudent.getEmail()).isEqualTo(updateEmail)
+        );
     }
 }

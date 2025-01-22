@@ -53,4 +53,8 @@ public class Student extends User {
                 .name(name)
                 .build();
     }
+
+    public void update(String name, String email) {
+        super.updateUser(name, email);
+    }
 }

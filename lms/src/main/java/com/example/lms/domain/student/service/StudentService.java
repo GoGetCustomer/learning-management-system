@@ -3,6 +3,7 @@ package com.example.lms.domain.student.service;
 import com.example.lms.domain.student.dto.StudentBasicInfoResponseDto;
 import com.example.lms.domain.student.dto.StudentCreateRequestDto;
 import com.example.lms.domain.student.dto.StudentPersonalInfoResponseDto;
+import com.example.lms.domain.student.dto.StudentUpdateRequestDto;
 import com.example.lms.domain.student.entity.Student;
 import com.example.lms.domain.student.repository.StudentRepository;
 import com.example.lms.domain.teaching.repository.TeachingRepository;
@@ -76,6 +77,18 @@ public class StudentService {
                 .name(student.getName())
                 .email(student.getEmail())
                 .build();
+    }
+
+    @Transactional
+    public Long update(StudentUpdateRequestDto studentUpdateRequestDto) {
+        checkEmailDuplicate(studentUpdateRequestDto.getEmail());
+        Student student = studentRepository.findById(Long.valueOf(SecurityContextHolder.getContext().getAuthentication().getName()))
+                .orElseThrow(() -> new IllegalArgumentException("학생을 찾을 수 없습니다."));
+        student.update(
+                studentUpdateRequestDto.getName(),
+                studentUpdateRequestDto.getEmail()
+        );
+        return student.getId();
     }
 
     private boolean isAuthorizedInstructorForCourse(Long instructorId, Long courseId) {

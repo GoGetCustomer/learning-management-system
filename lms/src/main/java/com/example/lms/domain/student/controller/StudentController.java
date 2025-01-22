@@ -5,6 +5,7 @@ import com.example.lms.common.validation.ValidationSequence;
 import com.example.lms.domain.student.dto.StudentBasicInfoResponseDto;
 import com.example.lms.domain.student.dto.StudentCreateRequestDto;
 import com.example.lms.domain.student.dto.StudentPersonalInfoResponseDto;
+import com.example.lms.domain.student.dto.StudentUpdateRequestDto;
 import com.example.lms.domain.student.service.StudentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -49,5 +50,10 @@ public class StudentController implements StudentControllerDocs{
     @GetMapping("/managements")
     public ResponseEntity<StudentBasicInfoResponseDto> getBasicInfo(@RequestParam Long studentId, @RequestParam Long courseId) {
         return ResponseEntity.status(OK).body(studentService.findBasicInfoForInstructor(studentId, courseId));
+    }
+
+    @PutMapping
+    public ResponseEntity<Long> updateStudent(@Validated(ValidationSequence.class) @RequestBody StudentUpdateRequestDto studentUpdateRequestDto) {
+        return ResponseEntity.status(OK).body(studentService.update(studentUpdateRequestDto));
     }
 }

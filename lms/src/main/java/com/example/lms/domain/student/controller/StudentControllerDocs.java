@@ -4,6 +4,7 @@ import com.example.lms.common.auth.dto.LoginRequestDto;
 import com.example.lms.domain.student.dto.StudentBasicInfoResponseDto;
 import com.example.lms.domain.student.dto.StudentCreateRequestDto;
 import com.example.lms.domain.student.dto.StudentPersonalInfoResponseDto;
+import com.example.lms.domain.student.dto.StudentUpdateRequestDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -57,4 +58,11 @@ public interface StudentControllerDocs {
             @ApiResponse(responseCode = "403", description = "권한이 없습니다."),
     })
     public ResponseEntity<StudentBasicInfoResponseDto> getBasicInfo(Long studentId, Long courseId);
+
+    @Operation(summary = "학생 정보 수정 요청", description = "성공 반환 값 : student_id")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "학생 정보 수정 완료"),
+            @ApiResponse(responseCode = "403", description = "권한이 없습니다."),
+    })
+    public ResponseEntity<Long> updateStudent(StudentUpdateRequestDto studentUpdateRequestDto);
 }
