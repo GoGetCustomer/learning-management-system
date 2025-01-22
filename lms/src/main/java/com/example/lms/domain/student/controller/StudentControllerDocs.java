@@ -1,6 +1,7 @@
 package com.example.lms.domain.student.controller;
 
 import com.example.lms.common.auth.dto.LoginRequestDto;
+import com.example.lms.domain.student.dto.StudentBasicInfoResponseDto;
 import com.example.lms.domain.student.dto.StudentCreateRequestDto;
 import com.example.lms.domain.student.dto.StudentPersonalInfoResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
@@ -43,10 +44,17 @@ public interface StudentControllerDocs {
     })
     public ResponseEntity<Boolean> checkEmail(String email);
 
-    @Operation(summary = "회원 개인정보 조회 요청", description = " 회원의 개인 정보를 반환합니다.")
+    @Operation(summary = "학생 개인정보 조회 요청", description = " 학생의 개인 정보를 반환합니다.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "회원 개인정보 조회 완료"),
+            @ApiResponse(responseCode = "200", description = "학생 개인정보 조회 완료"),
             @ApiResponse(responseCode = "403", description = "권한이 없습니다."),
     })
     public ResponseEntity<StudentPersonalInfoResponseDto> getPersonalInfo();
+
+    @Operation(summary = "학생 관리 용 강사 수강 학생 정보 조회 요청", description = " 학생의 기본 정보를 반환합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "학생 기본정보 조회 완료"),
+            @ApiResponse(responseCode = "403", description = "권한이 없습니다."),
+    })
+    public ResponseEntity<StudentBasicInfoResponseDto> getBasicInfo(Long studentId, Long courseId);
 }

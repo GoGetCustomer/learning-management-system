@@ -55,6 +55,7 @@ public class SecurityConfig {
 						.requestMatchers(HttpMethod.DELETE, "/api/course/**").hasAuthority(Role.INSTRUCTOR.getAuthority())
 						.requestMatchers(HttpMethod.GET, "/api/course/**").permitAll()
 								.requestMatchers(HttpMethod.GET, "/api/students/check-login-id/{loginId}", "/api/students/check-email/{email}").permitAll()
+								.requestMatchers(HttpMethod.GET, "/api/students/managements").hasAuthority(Role.INSTRUCTOR.getAuthority())
 						.requestMatchers("/api/students", "/api/students/**").hasAuthority(Role.STUDENT.getAuthority())
 						.requestMatchers(HttpMethod.GET, "/api/instructors/check-login-id/{loginId}", "/api/instructors/check-email/{email}").permitAll()
 						.requestMatchers(HttpMethod.GET, "/api/instructors/{instructorId}").authenticated()

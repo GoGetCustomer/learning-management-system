@@ -2,6 +2,7 @@ package com.example.lms.domain.student.controller;
 
 import com.example.lms.common.auth.dto.LoginRequestDto;
 import com.example.lms.common.validation.ValidationSequence;
+import com.example.lms.domain.student.dto.StudentBasicInfoResponseDto;
 import com.example.lms.domain.student.dto.StudentCreateRequestDto;
 import com.example.lms.domain.student.dto.StudentPersonalInfoResponseDto;
 import com.example.lms.domain.student.service.StudentService;
@@ -43,5 +44,10 @@ public class StudentController implements StudentControllerDocs{
     @GetMapping
     public ResponseEntity<StudentPersonalInfoResponseDto> getPersonalInfo() {
         return ResponseEntity.status(OK).body(studentService.findPersonalInfo());
+    }
+
+    @GetMapping("/managements")
+    public ResponseEntity<StudentBasicInfoResponseDto> getBasicInfo(@RequestParam Long studentId, @RequestParam Long courseId) {
+        return ResponseEntity.status(OK).body(studentService.findBasicInfoForInstructor(studentId, courseId));
     }
 }

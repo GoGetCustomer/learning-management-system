@@ -1,10 +1,22 @@
 package com.example.lms.domain.student.service;
 
+import com.example.lms.common.fixture.CourseFixture;
+import com.example.lms.common.fixture.InstructorFixture;
 import com.example.lms.common.fixture.StudentFixture;
+import com.example.lms.domain.course.entity.Course;
+import com.example.lms.domain.course.repository.CourseRepository;
+import com.example.lms.domain.instructor.entity.Instructor;
+import com.example.lms.domain.instructor.repository.InstructorRepository;
+import com.example.lms.domain.instructor.service.InstructorService;
+import com.example.lms.domain.registration.entity.Registration;
+import com.example.lms.domain.registration.repository.RegistrationRepository;
+import com.example.lms.domain.student.dto.StudentBasicInfoResponseDto;
 import com.example.lms.domain.student.dto.StudentCreateRequestDto;
 import com.example.lms.domain.student.dto.StudentPersonalInfoResponseDto;
 import com.example.lms.domain.student.entity.Student;
 import com.example.lms.domain.student.repository.StudentRepository;
+import com.example.lms.domain.teaching.entity.Teaching;
+import com.example.lms.domain.teaching.repository.TeachingRepository;
 import com.example.lms.domain.user.enums.Role;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -30,6 +42,16 @@ class StudentServiceTest {
 
     @Autowired
     StudentRepository studentRepository;
+    @Autowired
+    private InstructorService instructorService;
+    @Autowired
+    private InstructorRepository instructorRepository;
+    @Autowired
+    private CourseRepository courseRepository;
+    @Autowired
+    private RegistrationRepository registrationRepository;
+    @Autowired
+    private TeachingRepository teachingRepository;
 
     @Test
     @DisplayName("학생으로 회원가입을 한다.")
@@ -92,5 +114,58 @@ class StudentServiceTest {
                 () -> assertThat(studentPersonalInfoResponseDto.getName()).isEqualTo(student.getName()),
                 () -> assertThat(studentPersonalInfoResponseDto.getEmail()).isEqualTo(student.getEmail())
         );
+    }
+
+    @Test
+    @DisplayName("해당 과정의 담당 강사가 학생 정보를 조회한다.")
+    void getBasicInfoForInstructor() {
+        //given
+        Instructor instructor = instructorRepository.save(InstructorFixture.INSTRUCTOR_FIXTURE_1.createInstructor());
+        SecurityContextHolder.getContext().setAuthentication(
+                new UsernamePasswordAuthenticationToken(instructor.getId(), null, Collections.singletonList(new SimpleGrantedAuthority(Role.INSTRUCTOR.getAuthority()))));
+
+        Student student = studentRepository.save(StudentFixture.STUDENT_FIXTURE_1.createStudent());
+        Course course = courseRepository.save(CourseFixture.COURSE_FIXTURE_1.createCourse());
+
+        Registration registration = Registration.of(student, course);
+        registrationRepository.save(registration);
+
+        Teaching teaching = Teaching.of(instructor, course);
+        teachingRepository.save(teaching);
+
+        //when
+        StudentBasicInfoResponseDto studentBasicInfoResponseDto = studentService.findBasicInfoForInstructor(student.getId(), course.getId());
+
+        //then
+        assertAll(
+                () -> assertThat(studentBasicInfoResponseDto.getId()).isEqualTo(student.getId()),
+                () -> assertThat(studentBasicInfoResponseDto.getName()).isEqualTo(student.getName()),
+                () -> assertThat(studentBasicInfoResponseDto.getEmail()).isEqualTo(student.getEmail())
+        );
+    }
+
+    @Test
+    @DisplayName("해당 과정의 담당 강사가 아니면 학생 정보를 조회 할 수 없다.")
+    void getBasicInfoAnotherInstructorTest() {
+        //given
+        Instructor instructor = instructorRepository.save(InstructorFixture.INSTRUCTOR_FIXTURE_1.createInstructor());
+
+        Student student = studentRepository.save(StudentFixture.STUDENT_FIXTURE_1.createStudent());
+        Course course = courseRepository.save(CourseFixture.COURSE_FIXTURE_1.createCourse());
+
+        Registration registration = Registration.of(student, course);
+        registrationRepository.save(registration);
+
+        Teaching teaching = Teaching.of(instructor, course);
+        teachingRepository.save(teaching);
+
+        Instructor anotherInstructor = instructorRepository.save(InstructorFixture.INSTRUCTOR_FIXTURE_2.createInstructor());
+        SecurityContextHolder.getContext().setAuthentication(
+                new UsernamePasswordAuthenticationToken(anotherInstructor.getId(), null, Collections.singletonList(new SimpleGrantedAuthority(Role.INSTRUCTOR.getAuthority()))));
+
+        //when & then
+        assertThatThrownBy(() -> studentService.findBasicInfoForInstructor(student.getId(), course.getId()))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("과정 진행 강사만 수강 학생 정보를 조회할 수 있습니다.");
     }
 }

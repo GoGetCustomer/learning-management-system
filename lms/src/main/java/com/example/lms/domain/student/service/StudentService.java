@@ -1,9 +1,11 @@
 package com.example.lms.domain.student.service;
 
+import com.example.lms.domain.student.dto.StudentBasicInfoResponseDto;
 import com.example.lms.domain.student.dto.StudentCreateRequestDto;
 import com.example.lms.domain.student.dto.StudentPersonalInfoResponseDto;
 import com.example.lms.domain.student.entity.Student;
 import com.example.lms.domain.student.repository.StudentRepository;
+import com.example.lms.domain.teaching.repository.TeachingRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -17,6 +19,7 @@ public class StudentService {
 
     private final StudentRepository studentRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final TeachingRepository teachingRepository;
 
     @Transactional
     public Long join(StudentCreateRequestDto studentCreateRequestDto) {
@@ -59,5 +62,23 @@ public class StudentService {
                 .name(student.getName())
                 .email(student.getEmail())
                 .build();
+    }
+
+    public StudentBasicInfoResponseDto findBasicInfoForInstructor(Long studentId, Long courseId) {
+        Long instructorId = Long.valueOf(SecurityContextHolder.getContext().getAuthentication().getName());
+        if (!isAuthorizedInstructorForCourse(instructorId, courseId)) {
+            throw new IllegalArgumentException("과정 진행 강사만 수강 학생 정보를 조회할 수 있습니다.");
+        }
+        Student student = studentRepository.findById(studentId)
+                .orElseThrow(() -> new IllegalArgumentException("학생을 찾을 수 없습니다."));
+        return StudentBasicInfoResponseDto.builder()
+                .id(student.getId())
+                .name(student.getName())
+                .email(student.getEmail())
+                .build();
+    }
+
+    private boolean isAuthorizedInstructorForCourse(Long instructorId, Long courseId) {
+        return teachingRepository.existsByCourseIdIdAndInstructorId(courseId, instructorId);
     }
 }
