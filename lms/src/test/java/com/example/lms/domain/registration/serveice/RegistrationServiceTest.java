@@ -177,4 +177,95 @@ class RegistrationServiceTest {
                 .hasMessage("이미 철회된 수강 이력입니다.");
     }
 
+    @Test
+    @DisplayName("강사는 수강 승인을 한다.")
+    void approveRegistrationUnauthorizedInstructorTest() {
+        //given
+        Student student = studentRepository.save(StudentFixture.STUDENT_FIXTURE_1.createStudent());
+        Course course = courseRepository.save(CourseFixture.COURSE_FIXTURE_1.createCourse());
+        Registration registration = registrationRepository.save(Registration.of(student, course));
+
+        Instructor instructor = instructorRepository.save(InstructorFixture.INSTRUCTOR_FIXTURE_1.createInstructor());
+        teachingRepository.save(Teaching.of(instructor, course));
+
+        SecurityContextHolder.getContext().setAuthentication(
+                new UsernamePasswordAuthenticationToken(instructor.getId(), null, Collections.singletonList(new SimpleGrantedAuthority(Role.INSTRUCTOR.getAuthority()))));
+
+        //when
+        registrationService.approveRegistration(registration.getId(), course.getId());
+        Registration canceledRegistration = registrationRepository.findById(registration.getId())
+                .orElseThrow(() -> new IllegalArgumentException("수강 이력을 찾을 수 없습니다."));
+        assertThat(canceledRegistration.getRegistrationStatus()).isEqualTo(RegistrationStatus.APPROVED);
+    }
+
+    @Test
+    @DisplayName("과정 진행 강사만 수강 승인을 한다.")
+    void approveRegistrationTest() {
+        //given
+        Student student = studentRepository.save(StudentFixture.STUDENT_FIXTURE_1.createStudent());
+        Course course = courseRepository.save(CourseFixture.COURSE_FIXTURE_1.createCourse());
+        Registration registration = registrationRepository.save(Registration.of(student, course));
+
+        Instructor instructor = instructorRepository.save(InstructorFixture.INSTRUCTOR_FIXTURE_1.createInstructor());
+        teachingRepository.save(Teaching.of(instructor, course));
+
+        Instructor anotherInstructor = instructorRepository.save(InstructorFixture.INSTRUCTOR_FIXTURE_2.createInstructor());
+        SecurityContextHolder.getContext().setAuthentication(
+                new UsernamePasswordAuthenticationToken(anotherInstructor.getId(), null, Collections.singletonList(new SimpleGrantedAuthority(Role.INSTRUCTOR.getAuthority()))));
+
+        //when
+        assertThatThrownBy(() -> registrationService.approveRegistration(registration.getId(), course.getId()))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("과정 진행 강사만 수강 신청을 승인할 수 있습니다.");
+    }
+
+    @Test
+    @DisplayName("이미 승인된 수강은 승인할 수 없다.")
+    void approveRegistrationAlreadyApprovedTest() {
+        //given
+        Student student = studentRepository.save(StudentFixture.STUDENT_FIXTURE_1.createStudent());
+        Course course = courseRepository.save(CourseFixture.COURSE_FIXTURE_1.createCourse());
+
+        Instructor instructor = instructorRepository.save(InstructorFixture.INSTRUCTOR_FIXTURE_1.createInstructor());
+        teachingRepository.save(Teaching.of(instructor, course));
+
+        SecurityContextHolder.getContext().setAuthentication(
+                new UsernamePasswordAuthenticationToken(
+                        instructor.getId(), null, Collections.singletonList(new SimpleGrantedAuthority(Role.INSTRUCTOR.getAuthority()))));
+
+        Registration registration = Registration.of(student, course);
+        registration.approve();
+
+        Registration approveRegistration = registrationRepository.save(registration);
+
+        //when & then
+        assertThatThrownBy(() -> registrationService.approveRegistration(approveRegistration.getId(), course.getId()))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("수강 승인 대기 상태가 아닙니다.");
+    }
+
+    @Test
+    @DisplayName("이미 철회된 수강은 승인할 수 없다.")
+    void approveRegistrationAlreadyCanceledTest() {
+        //given
+        Student student = studentRepository.save(StudentFixture.STUDENT_FIXTURE_1.createStudent());
+        Course course = courseRepository.save(CourseFixture.COURSE_FIXTURE_1.createCourse());
+
+        Instructor instructor = instructorRepository.save(InstructorFixture.INSTRUCTOR_FIXTURE_1.createInstructor());
+        teachingRepository.save(Teaching.of(instructor, course));
+
+        SecurityContextHolder.getContext().setAuthentication(
+                new UsernamePasswordAuthenticationToken(
+                        instructor.getId(), null, Collections.singletonList(new SimpleGrantedAuthority(Role.INSTRUCTOR.getAuthority()))));
+
+        Registration registration = Registration.of(student, course);
+        registration.cancel();
+
+        Registration cancelRegistration = registrationRepository.save(registration);
+
+        //when & then
+        assertThatThrownBy(() -> registrationService.approveRegistration(cancelRegistration.getId(), course.getId()))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("수강 승인 대기 상태가 아닙니다.");
+    }
 }

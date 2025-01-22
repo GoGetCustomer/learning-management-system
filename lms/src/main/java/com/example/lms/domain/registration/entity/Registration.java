@@ -64,4 +64,8 @@ public class Registration extends BaseTimeEntity {
     public void cancel() {
         this.registrationStatus = RegistrationStatus.CANCELED;
     }
+
+    public void approve() {
+        this.registrationStatus = RegistrationStatus.APPROVED;
+    }
 }

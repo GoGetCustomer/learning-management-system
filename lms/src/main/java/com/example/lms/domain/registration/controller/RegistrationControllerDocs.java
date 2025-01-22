@@ -22,4 +22,11 @@ public interface RegistrationControllerDocs {
             @ApiResponse(responseCode = "403", description = "권한 없습니다.")
     })
     public ResponseEntity<Long> cancel(Long registrationId, Long courseId);
+
+    @Operation(summary = "수강 승인 요청", description = "성공 응답 registration_id")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "수강 승인 성공"),
+            @ApiResponse(responseCode = "403", description = "권한 없습니다.")
+    })
+    public ResponseEntity<Long> approve(Long registrationId, Long courseId);
 }

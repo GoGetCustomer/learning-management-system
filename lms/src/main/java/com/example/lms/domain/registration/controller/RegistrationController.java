@@ -18,8 +18,13 @@ public class RegistrationController implements RegistrationControllerDocs{
         return ResponseEntity.status(HttpStatus.CREATED).body(registrationService.registerStudent(courseId));
     }
 
-    @PutMapping("/{registrationId}/courses/{courseId}")
+    @PutMapping("/{registrationId}/courses/{courseId}/cancel")
     public ResponseEntity<Long> cancel(@PathVariable("registrationId") Long registrationId, @PathVariable("courseId") Long courseId) {
         return ResponseEntity.status(HttpStatus.CREATED).body(registrationService.cancelRegistration(registrationId, courseId));
+    }
+
+    @PutMapping("/{registrationId}/courses/{courseId}/approve")
+    public ResponseEntity<Long> approve(@PathVariable("registrationId") Long registrationId, @PathVariable("courseId") Long courseId) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(registrationService.approveRegistration(registrationId, courseId));
     }
 }

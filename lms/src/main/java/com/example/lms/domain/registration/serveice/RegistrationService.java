@@ -29,7 +29,7 @@ public class RegistrationService {
     public Long registerStudent(Long courseId) {
         Long studentId = Long.valueOf(SecurityContextHolder.getContext().getAuthentication().getName());
 
-        if (isAlreadyRegistered(courseId, studentId)) {
+        if (isStudentRegisteredForCourse(courseId, studentId)) {
             throw new IllegalStateException("이미 수강 신청을 완료한 학생입니다.");
         }
         Course course = courseRepository.findById(courseId)
@@ -41,7 +41,7 @@ public class RegistrationService {
 
     @Transactional
     public Long cancelRegistration(Long registrationId, Long courseId) {
-        if (isAlreadyCanceled(registrationId)) {
+        if (isRegistrationInStatus(registrationId, RegistrationStatus.CANCELED)) {
             throw new IllegalArgumentException("이미 철회된 수강 이력입니다.");
         }
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -55,6 +55,23 @@ public class RegistrationService {
         Registration registration = registrationRepository.findById(registrationId)
                 .orElseThrow(() -> new IllegalArgumentException("수강 신청 내역을 찾지 못했습니다."));
         registration.cancel();
+        return registration.getId();
+    }
+
+    @Transactional
+    public Long approveRegistration(Long registrationId, Long courseId) {
+        if (!isRegistrationInStatus(registrationId, RegistrationStatus.REGISTERED)) {
+            throw new IllegalArgumentException("수강 승인 대기 상태가 아닙니다.");
+        }
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Long instructorId = Long.valueOf(authentication.getName());
+        String role = authentication.getAuthorities().iterator().next().getAuthority();
+        if (!role.equals(Role.INSTRUCTOR.getAuthority()) || !isAuthorizedInstructorForCourse(instructorId, courseId)) {
+            throw new IllegalArgumentException("과정 진행 강사만 수강 신청을 승인할 수 있습니다.");
+        }
+        Registration registration = registrationRepository.findById(registrationId)
+                .orElseThrow(() -> new IllegalArgumentException("수강 신청 내역을 찾지 못했습니다."));
+        registration.approve();
         return registration.getId();
     }
 
@@ -76,11 +93,11 @@ public class RegistrationService {
         return teachingRepository.existsByCourseIdIdAndInstructorId(courseId, instructorId);
     }
 
-    private boolean isAlreadyRegistered(Long courseId, Long studentId) {
+    private boolean isStudentRegisteredForCourse(Long courseId, Long studentId) {
         return registrationRepository.existsByCourseIdAndStudentId(courseId, studentId);
     }
 
-    private boolean isAlreadyCanceled(Long registrationId) {
-        return registrationRepository.existsByRegistrationIdAndStatus(registrationId, RegistrationStatus.CANCELED);
+    private boolean isRegistrationInStatus(Long registrationId, RegistrationStatus status) {
+        return registrationRepository.existsByRegistrationIdAndStatus(registrationId, status);
     }
 }
