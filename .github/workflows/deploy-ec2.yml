@@ -1,7 +1,7 @@
 name: Deploy with Docker
 
 on:
-  push:
+  pull_request:
     branches:
       - develop
 
@@ -73,4 +73,8 @@ jobs:
               -e REFRESH_SECRET_KEY=${{ secrets.JWT_KEY }} \
               -e ACCESS_VALIDITY_SECONDS=600 \
               -e REFRESH_VALIDITY_SECONDS=86400 \
+              -e AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} \
+              -e AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} \
+              -e AWS_REGION=${{ secrets.AWS_REGION }} \
+              -e AWS_S3_BUCKET=${{ secrets.AWS_S3_BUCKET }} \
               ${{ secrets.DOCKERHUB_USERNAME }}/goget-customer:latest
