@@ -39,12 +39,33 @@ public class Registration extends BaseTimeEntity {
     private Course course;
 
     @Builder
-    private Registration(RegistrationStatus registrationStatus) {
-        this.registrationStatus = registrationStatus;
+    private Registration(Student student, Course course) {
+        setStudent(student);
+        setCourse(course);
+        this.registrationStatus = RegistrationStatus.REGISTERED;
     }
 
-    public static Registration of(RegistrationStatus registrationStatus) {
+    public static Registration of(Student student, Course course) {
         return Registration.builder()
+                .student(student)
+                .course(course)
                 .build();
+    }
+
+    private void setStudent(Student student) {
+        this.student = student;
+        student.getRegistrations().add(this);
+    }
+    private void setCourse(Course course) {
+        this.course = course;
+        course.getRegistrations().add(this);
+    }
+
+    public void cancel() {
+        this.registrationStatus = RegistrationStatus.CANCELED;
+    }
+
+    public void approve() {
+        this.registrationStatus = RegistrationStatus.APPROVED;
     }
 }

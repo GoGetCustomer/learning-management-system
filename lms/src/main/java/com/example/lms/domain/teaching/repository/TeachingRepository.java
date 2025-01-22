@@ -11,6 +11,9 @@ public interface TeachingRepository extends JpaRepository<Teaching, Long> {
     @Query("select t from Teaching t left join fetch t.course left join fetch t.instructor where t.instructor.id =:id")
     Page<Teaching> findPageByInstructorId(@Param("id") Long id, Pageable pageable);
 
-    @Query("select count(t) > 0 from Teaching t where t.instructor.id = :id")
-    boolean existsByInstructorId(@Param("id") Long id);
+    @Query("select count(t) > 0 from Teaching t where t.instructor.id = :instructorId and t.id = :teachingId")
+    boolean existsByInstructorIdAndTeachingId(@Param("instructorId") Long instructorId, @Param("teachingId") Long registrationId);
+
+    @Query("select count(t) > 0 from Teaching t where t.instructor.id = :instructorId and t.course.id = :courseId")
+    boolean existsByCourseIdIdAndInstructorId(@Param("courseId") Long courseId, @Param("instructorId") Long instructorId);
 }

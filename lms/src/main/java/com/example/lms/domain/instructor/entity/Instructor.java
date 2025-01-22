@@ -25,7 +25,7 @@ public class Instructor extends User {
     @Column(name = "instructor_id")
     private Long id;
 
-    @Column(name = "instructor_descroption", nullable = false)
+    @Column(name = "instructor_description", nullable = false)
     private String description;
 
     @OneToMany(mappedBy = "instructor", cascade = ALL)

@@ -27,7 +27,7 @@ public class TeachingResponseDto {
     @Schema(description = "과정 설명", example = "스프링 백엔드 기초에 대해 가볍게 살펴보는 과정입니다. 초보자들에게 적합한 과정입니다.")
     private final String courseDescription;
 
-    @Schema(description = "과정 종료일")
+    @Schema(description = "과정 시작 일")
     private final LocalDate startDate;
 
     @Schema(description = "과정 종료 일")
