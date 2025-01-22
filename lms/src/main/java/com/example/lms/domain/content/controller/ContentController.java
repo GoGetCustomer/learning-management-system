@@ -2,11 +2,8 @@ package com.example.lms.domain.content.controller;
 
 import com.example.lms.domain.content.dto.response.ContentResponseDto;
 import com.example.lms.domain.content.service.ContentService;
-import com.example.lms.domain.lecture.entity.Lecture;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -29,19 +27,16 @@ public class ContentController {
     @PostMapping(consumes = {"multipart/form-data"})
     @Operation(summary = "과정 내 강의자료 생성", description = "새로운 강의자료를 업로드합니다.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "강의 업로드 성공",
-                    content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = Lecture.class))),
-            @ApiResponse(responseCode = "400", description = "Invalid input",
-                    content = @Content),
-            @ApiResponse(responseCode = "500", description = "Internal server error",
-                    content = @Content)
+            @ApiResponse(responseCode = "201", description = "강의 업로드 성공"),
+            @ApiResponse(responseCode = "400", description = "Invalid input"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     public ResponseEntity<ContentResponseDto> createContent(
             @PathVariable Long courseId,
             @RequestPart("file") MultipartFile file) throws IOException {
             ContentResponseDto response = contentService.addContent(courseId, file);
-            return ResponseEntity.ok(response);
+            URI location = URI.create(String.format("/api/course/%d/content/%d", courseId, response.getId()));
+        return ResponseEntity.created(location).body(response);
     }
 
     @DeleteMapping("/{contentId}")
