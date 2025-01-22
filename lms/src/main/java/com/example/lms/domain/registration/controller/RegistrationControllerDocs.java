@@ -1,9 +1,11 @@
 package com.example.lms.domain.registration.controller;
 
+import com.example.lms.domain.registration.dto.RegistrationStudentResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 
 @Tag(name = "Registration")
@@ -29,4 +31,11 @@ public interface RegistrationControllerDocs {
             @ApiResponse(responseCode = "403", description = "권한 없습니다.")
     })
     public ResponseEntity<Long> approve(Long registrationId, Long courseId);
+
+    @Operation(summary = "학생 수강 신청 내역 조회 요청", description = "성공 응답 registration 페이지")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "학생 수강 신청 내역 조회 성공"),
+            @ApiResponse(responseCode = "403", description = "권한 없습니다.")
+    })
+    public ResponseEntity<Page<RegistrationStudentResponseDto>> getRegistrationStudentHistory(int page);
 }

@@ -7,6 +7,7 @@ import com.example.lms.domain.course.entity.Course;
 import com.example.lms.domain.course.repository.CourseRepository;
 import com.example.lms.domain.instructor.entity.Instructor;
 import com.example.lms.domain.instructor.repository.InstructorRepository;
+import com.example.lms.domain.registration.dto.RegistrationStudentResponseDto;
 import com.example.lms.domain.registration.entity.Registration;
 import com.example.lms.domain.registration.enums.RegistrationStatus;
 import com.example.lms.domain.registration.repository.RegistrationRepository;
@@ -19,6 +20,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -267,5 +269,40 @@ class RegistrationServiceTest {
         assertThatThrownBy(() -> registrationService.approveRegistration(cancelRegistration.getId(), course.getId()))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("수강 승인 대기 상태가 아닙니다.");
+    }
+
+    @Test
+    @DisplayName("학생은 자신의 수강 신청 내역 목록을 조회합니다.")
+    void findStudentRegistrationHistoryTest() {
+        //given
+        Student student = studentRepository.save(StudentFixture.STUDENT_FIXTURE_1.createStudent());
+        SecurityContextHolder.getContext().setAuthentication(
+                new UsernamePasswordAuthenticationToken(student.getId(), null));
+
+        Course firstCourse = courseRepository.save(CourseFixture.COURSE_FIXTURE_1.createCourse());
+        Course secondCourse = courseRepository.save(CourseFixture.COURSE_FIXTURE_2.createCourse());
+
+        Registration firstRegistration = registrationRepository.save(Registration.of(student, firstCourse));
+        Registration secondRegistration = registrationRepository.save(Registration.of(student, secondCourse));
+
+        //when
+        Page<RegistrationStudentResponseDto> result = registrationService.findStudentRegistrationHistory(1);
+
+        //then
+        RegistrationStudentResponseDto dto = result.getContent().get(0);
+        RegistrationStudentResponseDto dto2 = result.getContent().get(1);
+        assertAll(
+                () -> assertThat(dto.getId()).isEqualTo(firstRegistration.getId()),
+                () -> assertThat(dto.getRegistrationStatus()).isEqualTo(firstRegistration.getRegistrationStatus().getCode()),
+                () -> assertThat(dto.getCreateAt()).isEqualTo(firstRegistration.getCreatedAt()),
+                () -> assertThat(dto.getCourseId()).isEqualTo(firstCourse.getId()),
+                () -> assertThat(dto.getCourseTitle()).isEqualTo(firstCourse.getCourseTitle()),
+                () -> assertThat(dto.getCourseDescription()).isEqualTo(firstCourse.getCourseDescription()),
+                () -> assertThat(dto2.getId()).isEqualTo(secondRegistration.getId()),
+                () -> assertThat(dto2.getRegistrationStatus()).isEqualTo(secondRegistration.getRegistrationStatus().getCode()),
+                () -> assertThat(dto2.getCreateAt()).isEqualTo(secondRegistration.getCreatedAt()),
+                () -> assertThat(dto2.getCourseId()).isEqualTo(secondCourse.getId()),
+                () -> assertThat(dto2.getCourseTitle()).isEqualTo(secondCourse.getCourseTitle()),
+                () -> assertThat(dto2.getCourseDescription()).isEqualTo(secondCourse.getCourseDescription()));
     }
 }

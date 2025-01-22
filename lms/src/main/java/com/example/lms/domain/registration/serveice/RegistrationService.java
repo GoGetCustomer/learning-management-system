@@ -2,6 +2,7 @@ package com.example.lms.domain.registration.serveice;
 
 import com.example.lms.domain.course.entity.Course;
 import com.example.lms.domain.course.repository.CourseRepository;
+import com.example.lms.domain.registration.dto.RegistrationStudentResponseDto;
 import com.example.lms.domain.registration.entity.Registration;
 import com.example.lms.domain.registration.enums.RegistrationStatus;
 import com.example.lms.domain.registration.repository.RegistrationRepository;
@@ -10,6 +11,8 @@ import com.example.lms.domain.student.repository.StudentRepository;
 import com.example.lms.domain.teaching.repository.TeachingRepository;
 import com.example.lms.domain.user.enums.Role;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -73,6 +76,20 @@ public class RegistrationService {
                 .orElseThrow(() -> new IllegalArgumentException("수강 신청 내역을 찾지 못했습니다."));
         registration.approve();
         return registration.getId();
+    }
+
+    public Page<RegistrationStudentResponseDto> findStudentRegistrationHistory(int page) {
+        Long studentId = Long.valueOf(SecurityContextHolder.getContext().getAuthentication().getName());
+        Page<Registration> registrationPage = registrationRepository.findPageByStudentIdWithCourse(studentId, PageRequest.of(page - 1, 10));
+        return registrationPage.map(registration -> RegistrationStudentResponseDto.builder()
+                .id(registration.getId())
+                .registrationStatus(registration.getRegistrationStatus().getCode())
+                .createAt(registration.getCreatedAt())
+                .courseId(registration.getCourse().getId())
+                .courseTitle(registration.getCourse().getCourseTitle())
+                .courseDescription(registration.getCourse().getCourseDescription())
+                .build()
+        );
     }
 
     private boolean isAuthorizedForCourse(String role, Long targetId, Long courseId) {
