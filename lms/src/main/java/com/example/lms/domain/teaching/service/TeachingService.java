@@ -33,4 +33,13 @@ public class TeachingService {
                 .build()
         );
     }
+
+    @Transactional
+    public void delete(Long id) {
+        Long instructorId = Long.valueOf(SecurityContextHolder.getContext().getAuthentication().getName());
+        if (!teachingRepository.existsByInstructorId(instructorId)) {
+            throw new IllegalArgumentException("수업 생성을 한 강사만 삭제를 진행 할 수 있습니다.");
+        }
+        teachingRepository.deleteById(id);
+    }
 }

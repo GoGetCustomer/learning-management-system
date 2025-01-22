@@ -63,4 +63,22 @@ class TeachingServiceTest {
                 () -> assertThat(dto.getEndDate()).isEqualTo(course.getEndDate())
         );
     }
+
+    @Test
+    @DisplayName("강사는 수업을 삭제합니다.")
+    void deleteTeachingTest() {
+        //given
+        Instructor instructor = instructorRepository.save(InstructorFixture.INSTRUCTOR_FIXTURE_1.createInstructor());
+        SecurityContextHolder.getContext().setAuthentication(
+                new UsernamePasswordAuthenticationToken(instructor.getId(), null));
+
+        Course course = courseRepository.save(CourseFixture.COURSE_FIXTURE_1.createCourse());
+        Teaching teaching = teachingRepository.save(Teaching.of(instructor, course));
+
+        //when
+        teachingService.delete(teaching.getId());
+
+        //then
+        assertThat(teachingRepository.findById(teaching.getId())).isEmpty();
+    }
 }
