@@ -13,4 +13,7 @@ public interface TeachingRepository extends JpaRepository<Teaching, Long> {
 
     @Query("select count(t) > 0 from Teaching t where t.instructor.id = :instructorId and t.id = :teachingId")
     boolean existsByInstructorIdAndTeachingId(@Param("instructorId") Long instructorId, @Param("teachingId") Long registrationId);
+
+    @Query("select count(t) > 0 from Teaching t where t.instructor.id = :instructorId and t.course.id = :courseId")
+    boolean existsByCourseIdIdAndInstructorId(@Param("courseId") Long courseId, @Param("instructorId") Long instructorId);
 }

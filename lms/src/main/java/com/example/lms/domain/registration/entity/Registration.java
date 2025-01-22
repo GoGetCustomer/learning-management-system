@@ -60,4 +60,8 @@ public class Registration extends BaseTimeEntity {
         this.course = course;
         course.getRegistrations().add(this);
     }
+
+    public void cancel() {
+        this.registrationStatus = RegistrationStatus.CANCELED;
+    }
 }
