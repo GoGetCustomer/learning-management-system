@@ -52,6 +52,7 @@ public class SecurityConfig {
 				.authorizeHttpRequests(auth -> auth
 						.requestMatchers(SWAGGER_PATTERNS).permitAll()
 						.requestMatchers(HttpMethod.POST, "/api/students/signup", "/api/instructors/signup").permitAll()
+						.requestMatchers(HttpMethod.POST, "/api/students/login", "/api/instructors/login").permitAll()
 						.requestMatchers(HttpMethod.GET, "/api/users/reissue").permitAll()
 						.requestMatchers(HttpMethod.POST, "/api/course/**").hasAuthority(Role.INSTRUCTOR.getAuthority())
 //						.requestMatchers(HttpMethod.POST, "/api/course").hasAuthority(Role.INSTRUCTOR.getAuthority())
