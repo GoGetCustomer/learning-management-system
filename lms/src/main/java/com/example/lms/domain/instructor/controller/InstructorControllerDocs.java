@@ -12,7 +12,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 
-@Tag(name = "Instructors")
+@Tag(name = "instructor-controller")
 @Validated
 public interface InstructorControllerDocs {
 

@@ -6,7 +6,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 
-@Tag(name = "Teaching")
+@Tag(name = "teaching-controller")
 public interface TeachingControllerDocs {
 
     @Operation(summary = "수업 정보를 요청", description = "강사가 자신의 진행할 수업 목록을 확인합니다.")

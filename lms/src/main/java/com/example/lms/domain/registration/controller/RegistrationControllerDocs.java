@@ -9,7 +9,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 
-@Tag(name = "Registration")
+@Tag(name = "registration-controller")
 public interface RegistrationControllerDocs {
 
     @Operation(summary = "수강 신청 요청", description = "성공 응답 student_id")
