@@ -47,7 +47,7 @@
 ---
 
 ## ERD
-![학습관리시스템 (1)](https://github.com/user-attachments/assets/75109f32-7479-467b-8c6e-aedcdb8f4965)
+![학습관리시스템 (1)](https://github.com/user-attachments/assets/c4134fd9-b75f-4391-9c23-82eb356c8239)
 
 
 ## 역할 분담
