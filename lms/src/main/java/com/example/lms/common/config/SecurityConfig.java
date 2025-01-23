@@ -25,6 +25,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.List;
 
@@ -41,6 +44,7 @@ public class SecurityConfig {
 												   @Qualifier("studentAuthenticationManager") AuthenticationManager studentAuthenticationManager,
 												   @Qualifier("instructorAuthenticationManager") AuthenticationManager instructorAuthenticationManager) throws Exception {
 		http
+			.cors(cors -> cors.configurationSource(corsConfigurationSource()))
 				.csrf(AbstractHttpConfigurer::disable)
 				.formLogin(AbstractHttpConfigurer::disable)
 				.httpBasic(AbstractHttpConfigurer::disable)
@@ -113,4 +117,24 @@ public class SecurityConfig {
 			"/actuator/**",
 			"/v3/api-docs/**",
 	};
+
+	@Bean
+	public CorsConfigurationSource corsConfigurationSource() {
+		final CorsConfiguration configuration = new CorsConfiguration();
+		configuration.setAllowedOrigins(List.of("*"));
+		configuration.setAllowedMethods(List.of(ALLOWED_METHODS));
+		configuration.setAllowedHeaders(List.of(ALLOWED_HEADERS));
+		configuration.setAllowCredentials(false);
+
+		final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+		source.registerCorsConfiguration("/**", configuration);
+		return source;
+	}
+
+
+	private final String[] ALLOWED_METHODS = {
+		"HEAD", "GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"
+	};
+
+	private final String[] ALLOWED_HEADERS = {"Authorization", "Cache-Control", "Content-Type"};
 }
