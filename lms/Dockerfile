@@ -17,5 +17,6 @@ ENV AWS_ACCESS_KEY_ID=placeholder
 ENV AWS_SECRET_ACCESS_KEY=placeholder
 ENV AWS_REGION=placeholder
 ENV AWS_S3_BUCKET=placeholder
+ENV REDIS_HOST=placeholder
 
 ENTRYPOINT ["java", "-jar", "app.jar"]

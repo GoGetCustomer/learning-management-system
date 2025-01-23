@@ -1,7 +1,7 @@
 name: Deploy with Docker
 
 on:
-  push:
+  pull_request:
     branches:
       - develop
 
@@ -77,4 +77,5 @@ jobs:
               -e AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} \
               -e AWS_REGION=${{ secrets.AWS_REGION }} \
               -e AWS_S3_BUCKET=${{ secrets.AWS_S3_BUCKET }} \
+              -e AWS_S3_BUCKET=54.180.78.104 \
               ${{ secrets.DOCKERHUB_USERNAME }}/goget-customer:latest
