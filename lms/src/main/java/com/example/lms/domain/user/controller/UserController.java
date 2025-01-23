@@ -58,10 +58,8 @@ public class UserController implements UserControllerDocs{
         }
 
         String newAccessToken = tokenProvider.createAccessToken(subject, role, new Date());
-        String newRefreshToken = tokenProvider.createRefreshToken(subject, role, new Date());
         return ResponseEntity.status(OK)
                 .header(AUTHORIZATION_HEADER, newAccessToken)
-                .header(COOKIE_PREFIX, createCookie(REFRESH_TOKEN_COOKIE_NAME, newRefreshToken, tokenProvider.getRefreshTokenExpirationSeconds()).toString())
                 .body(null);
     }
 
