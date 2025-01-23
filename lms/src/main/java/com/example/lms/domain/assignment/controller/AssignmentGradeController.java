@@ -18,7 +18,6 @@ public class AssignmentGradeController {
 
     private final AssignmentGradeService gradeService;
 
-    // 성적 등록
     @PostMapping
     public ResponseEntity<AssignmentGradeResponse> createGrade(
             @PathVariable Long assignmentId,
@@ -29,7 +28,6 @@ public class AssignmentGradeController {
         return ResponseEntity.ok(new AssignmentGradeResponse(grade));
     }
 
-    // 과제별 성적 조회
     @GetMapping
     public ResponseEntity<List<AssignmentGradeResponse>> getGradesByAssignment(@PathVariable Long assignmentId) {
         List<AssignmentGrade> grades = gradeService.getGradesByAssignment(assignmentId);
