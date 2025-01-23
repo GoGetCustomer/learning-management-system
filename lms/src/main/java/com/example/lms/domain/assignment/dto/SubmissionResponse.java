@@ -9,7 +9,6 @@ public class SubmissionResponse {
     private String fileUrl;
     private LocalDateTime submittedAt;
 
-    // Getters and setters
     public Long getId() {
         return id;
     }
