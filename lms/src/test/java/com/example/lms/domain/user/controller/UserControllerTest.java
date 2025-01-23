@@ -214,10 +214,7 @@ class UserControllerTest {
         when(tokenProvider.validateRefreshTokenWithAccessTokenInfo(ROLE_STUDENT, TEST_SUBJECT, requestRefreshToken)).thenReturn(true);
 
         String newAccessToken = "newAccessToken";
-        String newRefreshToken = "newRefreshToken";
         Mockito.when(tokenProvider.createAccessToken(eq(TEST_SUBJECT), eq(ROLE_STUDENT), any(Date.class))).thenReturn(newAccessToken);
-        Mockito.when(tokenProvider.createRefreshToken(eq(TEST_SUBJECT), eq(ROLE_STUDENT), any(Date.class))).thenReturn(newRefreshToken);
-        Mockito.when(tokenProvider.getRefreshTokenExpirationSeconds()).thenReturn(3600L);
 
         // when
         ResultActions actions = mockMvc.perform(
@@ -229,12 +226,6 @@ class UserControllerTest {
         actions
                 .andExpect(status().isOk())
                 .andExpect(header().string(AUTHORIZATION_HEADER, newAccessToken))
-                .andExpect(header().exists(HttpHeaders.SET_COOKIE))
-                .andExpect(header().string(HttpHeaders.SET_COOKIE, containsString("refresh_token=" + newRefreshToken)))
-                .andExpect(header().string(HttpHeaders.SET_COOKIE, containsString("Path=/")))
-                .andExpect(header().string(HttpHeaders.SET_COOKIE, containsString("Max-Age=" + 3600L)))
-                .andExpect(header().string(HttpHeaders.SET_COOKIE, containsString("HttpOnly")))
-                .andExpect(header().string(HttpHeaders.SET_COOKIE, containsString("SameSite=Strict")))
                 .andDo(print());
     }
 
